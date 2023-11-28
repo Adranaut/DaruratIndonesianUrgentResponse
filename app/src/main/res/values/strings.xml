@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Darurat Indonesian Urgent Response</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Confirmation Preferences -->
+    <string name="pref_key_confirm">key_confirmation</string>
+    <string name="pref_confirm_name">Call Confirmation</string>
+    <string name="pref_confirm_summary">Alert dialog when do call.</string>
+
+    <!-- Alert Dialog -->
+    <string name="alert_title">Alert!</string>
+    <string name="alert_message">Are you sure?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+
+    <!-- Array -->
+    <string name="chose">-- Chose type --</string>
+    <string name="police">Police</string>
+    <string name="ambulance">Ambulance</string>
+    <string name="firefighter">Firefighter</string>
+
+    <!-- Message -->
+    <string name="message_granted">Access granted</string>
+    <string name="message_denied">No location access granted</string>
+    <string name="message_gps">Please enable internet and GPS!!!</string>
+
+
+    <string name="address">Address</string>
+    <string name="get_current_location">Get Current Location</string>
+    <string name="get">Get</string>
+    <string name="marker_image">Marker image</string>
+    <string name="try_again">Try again</string>
+    <string name="something_wrong">Something Wrong! Please check Your Internet</string>
+
+</resources>

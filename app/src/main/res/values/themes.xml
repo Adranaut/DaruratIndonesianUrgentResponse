@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DaruratIndonesianUrgentResponse" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/tosca</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/tosca</item>
+        <item name="android:navigationBarColor">@color/tosca</item>
+    </style>
+
+    <style name="Theme.DaruratIndonesianUrgentResponse" parent="Base.Theme.DaruratIndonesianUrgentResponse" />
+</resources>

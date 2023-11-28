@@ -1,0 +1,8 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreference
+        app:key="@string/pref_key_confirm"
+        app:summary="@string/pref_confirm_summary"
+        app:title="@string/pref_confirm_name" />
+
+</PreferenceScreen>

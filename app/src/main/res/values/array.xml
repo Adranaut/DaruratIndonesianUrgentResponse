@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="type">
+        <item>@string/chose</item>
+        <item>@string/police</item>
+        <item>@string/ambulance</item>
+        <item>@string/firefighter</item>
+    </string-array>
+
+</resources>
