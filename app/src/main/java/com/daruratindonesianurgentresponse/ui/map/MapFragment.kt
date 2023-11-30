@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -17,12 +18,16 @@ import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.data.response.ResultsItem
 import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
+import com.daruratindonesianurgentresponse.utils.RADIUS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.launch
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -33,26 +38,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private lateinit var fusedLocationClient : FusedLocationProviderClient
-    private lateinit var mLocation: String
-    private var latitude : Double? = null
-    private var longitude : Double? = null
+    private lateinit var mLocationString: String
+    private lateinit var mLocationLatLng: LatLng
     private lateinit var mMap : GoogleMap
-//    private lateinit var myLocation : Location
-//    private lateinit var fusedLocationClient : FusedLocationProviderClient
-//
-//    private lateinit var mLocation: String
-//    private var latitude : Double? = null
-//    private var longitude : Double? = null
+    private val boundsBuilder = LatLngBounds.Builder()
 
-//    private lateinit var placesClient : PlacesClient
-//    private lateinit var sessionToken : AutocompleteSessionToken
-
-//    var mMap : GoogleMap? = null
-//    lateinit var mLastLocation : Location
-//    var mCurrLocationMarker: Marker? = null
-//    var mGoogleApiClient: GoogleApiClient? = null
-//    lateinit var mLocationRequest: LocationRequest
-
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -79,13 +71,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         binding.rvMap.layoutManager = LinearLayoutManager(requireContext())
 
+        binding.spinnerType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+                    0 -> Toast.makeText(requireContext(), "Mohon pilih kategori", Toast.LENGTH_LONG).show()
+                    1 -> servicesLocation("12072")
+                    2 -> servicesLocation("15008")
+                    3 -> servicesLocation("12071")
+                }
+            }
 
-        //set location lat long
-//        mLocation = "$latitude,$longitude"
-
-//        binding.btnTest.setOnClickListener {
-//            searchLocation()
-//        }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Toast.makeText(requireContext(), "Mohon pilih kategori", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -108,85 +112,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //            mMap!!.isMyLocationEnabled = true
 //        }
 
-        mMap!!.uiSettings.isZoomControlsEnabled = true
-        mMap!!.uiSettings.isIndoorLevelPickerEnabled = true
-        mMap!!.uiSettings.isCompassEnabled = true
-        mMap!!.uiSettings.isMapToolbarEnabled = true
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isIndoorLevelPickerEnabled = true
+        mMap.uiSettings.isCompassEnabled = true
+        mMap.uiSettings.isMapToolbarEnabled = true
 
         getMyLocation()
     }
-
-//    protected fun buildGoogleApiClient() {
-//        mGoogleApiClient = GoogleApiClient.Builder(requireContext())
-//            .addConnectionCallbacks(this@MapFragment)
-//            .addOnConnectionFailedListener(this@MapFragment)
-//            .addApi(LocationServices.API).build()
-//        mGoogleApiClient!!.connect()
-//    }
-//
-//    override fun onLocationChanged(location: Location) {
-//        mLastLocation = location
-//        if (mCurrLocationMarker != null) {
-//            mCurrLocationMarker!!.remove()
-//        }
-//
-//        val latLng = LatLng(location.latitude, location.longitude)
-//        val markerOptions = MarkerOptions()
-//        markerOptions.position(latLng)
-//        markerOptions.title("Current Position")
-//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-//        mCurrLocationMarker = mMap!!.addMarker(markerOptions)
-//
-//        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-//        mMap!!.moveCamera(CameraUpdateFactory.zoomTo(12f))
-//
-//        if (mGoogleApiClient != null) {
-//            LocationServices.getFusedLocationProviderClient(requireActivity())
-//        }
-//    }
-//
-//    override fun onConnected(p0: Bundle?) {
-//        mLocationRequest = LocationRequest()
-//        mLocationRequest.interval = 1000
-//        mLocationRequest.fastestInterval = 1000
-//        if (ContextCompat.checkSelfPermission(
-//                requireContext(),
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//        ) ==PackageManager.PERMISSION_GRANTED) {
-//            LocationServices.getFusedLocationProviderClient(requireActivity())
-//        }
-//    }
-//
-//    override fun onConnectionSuspended(p0: Int) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onConnectionFailed(p0: ConnectionResult) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    fun searchLocation() {
-//        val locationSearch = "Bandung"
-//        var location : String
-//        location = locationSearch.trim()
-//        var addressList: List<Address>? = null
-//
-//        if (location == null || location == "") {
-//            Toast.makeText(requireContext(), "Provide location", Toast.LENGTH_LONG).show()
-//        } else {
-//            val geoCoder = Geocoder(requireContext())
-//            try {
-//                addressList = geoCoder.getFromLocationName(location, 1)
-//            } catch (e: IOException) {
-//                e.printStackTrace()
-//            }
-//
-//            val address = addressList!![0]
-//            val latLng = LatLng(address.latitude, address.longitude)
-//            mMap!!.addMarker(MarkerOptions().position(latLng).title(location))
-//            mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-//        }
-//    }
 
     private val requestPermissionLauncher =
         registerForActivityResult(
@@ -198,6 +130,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
     private fun getMyLocation() {
+        showLoading(true)
         if (ContextCompat.checkSelfPermission(
                 this.requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -205,41 +138,81 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
-                    latitude = location.latitude
-                    longitude = location.longitude
-                    mLocation = "${location.latitude},${location.longitude}"
-                    val currentLocation = LatLng(location.latitude, location.longitude)
-                    mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
-
-                    lifecycleScope.launch {
-                        viewModel.getNearbyPlaces(mLocation, "10000", "12072").collect { result ->
-                            result.onSuccess { credentials ->
-                                credentials.results?.let { items ->
-                                    showRecycleView(items)
-//                                    showLoading(false)
-                                    Toast.makeText(requireContext(), "Sukses", Toast.LENGTH_LONG).show()
-                                }
-                            }
-
-                            result.onFailure {
-//                                showLoading(false)
-                                Toast.makeText(requireContext(), "Gagal", Toast.LENGTH_LONG).show()
-                            }
-                        }
-                    }
+                    mLocationString = "${location.latitude},${location.longitude}"
+                    mLocationLatLng = LatLng(location.latitude, location.longitude)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocationLatLng, 12f))
+                    mMap.addMarker(
+                        MarkerOptions()
+                            .position(mLocationLatLng)
+                            .title(getString(R.string.current_location))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                    )
                 }
+                showLoading(false)
             }
-
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            showLoading(false)
+        }
+    }
+
+    private fun servicesLocation(code: String) {
+        showLoading(true)
+        mMap.clear()
+        lifecycleScope.launch {
+            viewModel.getNearbyPlaces(mLocationString, RADIUS, code).collect { result ->
+                result.onSuccess { credentials ->
+                    credentials.results?.let { items ->
+                        showRecycleView(items)
+                        boundsBuilder.include(mLocationLatLng)
+                        mMap.addMarker(
+                            MarkerOptions()
+                                .position(mLocationLatLng)
+                                .title(getString(R.string.current_location))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                        )
+                        items.forEach { data ->
+                            val latLng = LatLng(data?.geocodes?.main?.latitude as Double, data.geocodes.main.longitude as Double)
+                            mMap.addMarker(
+                                MarkerOptions()
+                                    .position(latLng)
+                                    .title(data.name)
+                                    .snippet(data.location?.formattedAddress)
+                            )
+                            boundsBuilder.include(latLng)
+                        }
+
+                        val bounds: LatLngBounds = boundsBuilder.build()
+                        mMap.animateCamera(
+                            CameraUpdateFactory.newLatLngBounds(
+                                bounds,
+                                resources.displayMetrics.widthPixels,
+                                resources.displayMetrics.heightPixels,
+                                180
+                            )
+                        )
+                        showLoading(false)
+                    }
+                }
+
+                result.onFailure {
+                    showLoading(false)
+                }
+            }
         }
     }
 
     private fun showRecycleView(mapResults: List<ResultsItem?>) {
         val adapter = NearbyAdapter()
-        if (mapResults != null) {
-            adapter.submitList(mapResults)
-        }
+        adapter.submitList(mapResults)
         binding.rvMap.adapter = adapter
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
+        }
     }
 }

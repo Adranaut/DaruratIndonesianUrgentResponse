@@ -26,6 +26,7 @@
 
 
     <string name="address">Address</string>
+    <string name="current_location">Current Location</string>
     <string name="get_current_location">Get Current Location</string>
     <string name="get">Get</string>
     <string name="marker_image">Marker image</string>
