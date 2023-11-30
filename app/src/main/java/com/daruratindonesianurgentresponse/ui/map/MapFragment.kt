@@ -2,43 +2,41 @@ package com.daruratindonesianurgentresponse.ui.map
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
-import android.location.Location
-import android.location.LocationListener
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.daruratindonesianurgentresponse.R
+import com.daruratindonesianurgentresponse.data.response.ResultsItem
 import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import java.io.IOException
+import kotlinx.coroutines.launch
 
-class MapFragment : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val viewModel by viewModels<MapViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
-//    private lateinit var mMap : GoogleMap
+    private lateinit var fusedLocationClient : FusedLocationProviderClient
+    private lateinit var mLocation: String
+    private var latitude : Double? = null
+    private var longitude : Double? = null
+    private lateinit var mMap : GoogleMap
 //    private lateinit var myLocation : Location
 //    private lateinit var fusedLocationClient : FusedLocationProviderClient
 //
@@ -49,11 +47,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiC
 //    private lateinit var placesClient : PlacesClient
 //    private lateinit var sessionToken : AutocompleteSessionToken
 
-    var mMap : GoogleMap? = null
-    lateinit var mLastLocation : Location
-    var mCurrLocationMarker: Marker? = null
-    var mGoogleApiClient: GoogleApiClient? = null
-    lateinit var mLocationRequest: LocationRequest
+//    var mMap : GoogleMap? = null
+//    lateinit var mLastLocation : Location
+//    var mCurrLocationMarker: Marker? = null
+//    var mGoogleApiClient: GoogleApiClient? = null
+//    lateinit var mLocationRequest: LocationRequest
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -77,22 +75,16 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiC
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMapBinding.bind(view)
 
-//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-//
-//        binding.rvMap.layoutManager = LinearLayoutManager(requireContext())
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        binding.rvMap.layoutManager = LinearLayoutManager(requireContext())
 
 
         //set location lat long
 //        mLocation = "$latitude,$longitude"
 
-        binding.btnTest.setOnClickListener {
-            searchLocation()
-        }
-
-//        viewModel.setHospitalLocation(mLocation)
-//
-//        viewModel.getHospitalLocation().observe(viewLifecycleOwner) { mapResults: ArrayList<MapResult>? ->
-//            showRecycleView(mapResults)
+//        binding.btnTest.setOnClickListener {
+//            searchLocation()
 //        }
     }
 
@@ -103,148 +95,151 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationListener, GoogleApiC
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) ==PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient()
-                mMap!!.isMyLocationEnabled = true
-            }
-        } else {
-            buildGoogleApiClient()
-            mMap!!.isMyLocationEnabled = true
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (ContextCompat.checkSelfPermission(
+//                    requireContext(),
+//                    Manifest.permission.ACCESS_FINE_LOCATION
+//                ) ==PackageManager.PERMISSION_GRANTED) {
+//                getMyLocation()
+//                mMap!!.isMyLocationEnabled = true
+//            }
+//        } else {
+//            getMyLocation()
+//            mMap!!.isMyLocationEnabled = true
+//        }
 
         mMap!!.uiSettings.isZoomControlsEnabled = true
         mMap!!.uiSettings.isIndoorLevelPickerEnabled = true
         mMap!!.uiSettings.isCompassEnabled = true
         mMap!!.uiSettings.isMapToolbarEnabled = true
 
-//        getMyLocation()
+        getMyLocation()
     }
 
-    protected fun buildGoogleApiClient() {
-        mGoogleApiClient = GoogleApiClient.Builder(requireContext())
-            .addConnectionCallbacks(this@MapFragment)
-            .addOnConnectionFailedListener(this@MapFragment)
-            .addApi(LocationServices.API).build()
-        mGoogleApiClient!!.connect()
-    }
+//    protected fun buildGoogleApiClient() {
+//        mGoogleApiClient = GoogleApiClient.Builder(requireContext())
+//            .addConnectionCallbacks(this@MapFragment)
+//            .addOnConnectionFailedListener(this@MapFragment)
+//            .addApi(LocationServices.API).build()
+//        mGoogleApiClient!!.connect()
+//    }
+//
+//    override fun onLocationChanged(location: Location) {
+//        mLastLocation = location
+//        if (mCurrLocationMarker != null) {
+//            mCurrLocationMarker!!.remove()
+//        }
+//
+//        val latLng = LatLng(location.latitude, location.longitude)
+//        val markerOptions = MarkerOptions()
+//        markerOptions.position(latLng)
+//        markerOptions.title("Current Position")
+//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+//        mCurrLocationMarker = mMap!!.addMarker(markerOptions)
+//
+//        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+//        mMap!!.moveCamera(CameraUpdateFactory.zoomTo(12f))
+//
+//        if (mGoogleApiClient != null) {
+//            LocationServices.getFusedLocationProviderClient(requireActivity())
+//        }
+//    }
+//
+//    override fun onConnected(p0: Bundle?) {
+//        mLocationRequest = LocationRequest()
+//        mLocationRequest.interval = 1000
+//        mLocationRequest.fastestInterval = 1000
+//        if (ContextCompat.checkSelfPermission(
+//                requireContext(),
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//        ) ==PackageManager.PERMISSION_GRANTED) {
+//            LocationServices.getFusedLocationProviderClient(requireActivity())
+//        }
+//    }
+//
+//    override fun onConnectionSuspended(p0: Int) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onConnectionFailed(p0: ConnectionResult) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    fun searchLocation() {
+//        val locationSearch = "Bandung"
+//        var location : String
+//        location = locationSearch.trim()
+//        var addressList: List<Address>? = null
+//
+//        if (location == null || location == "") {
+//            Toast.makeText(requireContext(), "Provide location", Toast.LENGTH_LONG).show()
+//        } else {
+//            val geoCoder = Geocoder(requireContext())
+//            try {
+//                addressList = geoCoder.getFromLocationName(location, 1)
+//            } catch (e: IOException) {
+//                e.printStackTrace()
+//            }
+//
+//            val address = addressList!![0]
+//            val latLng = LatLng(address.latitude, address.longitude)
+//            mMap!!.addMarker(MarkerOptions().position(latLng).title(location))
+//            mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+//        }
+//    }
 
-    override fun onLocationChanged(location: Location) {
-        mLastLocation = location
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker!!.remove()
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                getMyLocation()
+            }
         }
 
-        val latLng = LatLng(location.latitude, location.longitude)
-        val markerOptions = MarkerOptions()
-        markerOptions.position(latLng)
-        markerOptions.title("Current Position")
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        mCurrLocationMarker = mMap!!.addMarker(markerOptions)
-
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-        mMap!!.moveCamera(CameraUpdateFactory.zoomTo(12f))
-
-        if (mGoogleApiClient != null) {
-            LocationServices.getFusedLocationProviderClient(requireActivity())
-        }
-    }
-
-    override fun onConnected(p0: Bundle?) {
-        mLocationRequest = LocationRequest()
-        mLocationRequest.interval = 1000
-        mLocationRequest.fastestInterval = 1000
+    private fun getMyLocation() {
         if (ContextCompat.checkSelfPermission(
-                requireContext(),
+                this.requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-        ) ==PackageManager.PERMISSION_GRANTED) {
-            LocationServices.getFusedLocationProviderClient(requireActivity())
-        }
-    }
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    latitude = location.latitude
+                    longitude = location.longitude
+                    mLocation = "${location.latitude},${location.longitude}"
+                    val currentLocation = LatLng(location.latitude, location.longitude)
+                    mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
 
-    override fun onConnectionSuspended(p0: Int) {
-        TODO("Not yet implemented")
-    }
+                    lifecycleScope.launch {
+                        viewModel.getNearbyPlaces(mLocation, "10000", "12072").collect { result ->
+                            result.onSuccess { credentials ->
+                                credentials.results?.let { items ->
+                                    showRecycleView(items)
+//                                    showLoading(false)
+                                    Toast.makeText(requireContext(), "Sukses", Toast.LENGTH_LONG).show()
+                                }
+                            }
 
-    override fun onConnectionFailed(p0: ConnectionResult) {
-        TODO("Not yet implemented")
-    }
-
-    fun searchLocation() {
-        val locationSearch = "Bandung"
-        var location : String
-        location = locationSearch.trim()
-        var addressList: List<Address>? = null
-
-        if (location == null || location == "") {
-            Toast.makeText(requireContext(), "Provide location", Toast.LENGTH_LONG).show()
-        } else {
-            val geoCoder = Geocoder(requireContext())
-            try {
-                addressList = geoCoder.getFromLocationName(location, 1)
-            } catch (e: IOException) {
-                e.printStackTrace()
+                            result.onFailure {
+//                                showLoading(false)
+                                Toast.makeText(requireContext(), "Gagal", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
             }
 
-            val address = addressList!![0]
-            val latLng = LatLng(address.latitude, address.longitude)
-            mMap!!.addMarker(MarkerOptions().position(latLng).title(location))
-            mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
-//    private val requestPermissionLauncher =
-//        registerForActivityResult(
-//            ActivityResultContracts.RequestPermission()
-//        ) { isGranted: Boolean ->
-//            if (isGranted) {
-//                getMyLocation()
-//            }
-//        }
-//
-//    private fun getMyLocation() {
-//        if (ContextCompat.checkSelfPermission(
-//                this.requireContext(),
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            ) == PackageManager.PERMISSION_GRANTED
-//        ) {
-////            mMap.isMyLocationEnabled = true
-//            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-//                if (location != null) {
-//                    latitude = location.latitude
-//                    longitude = location.longitude
-////                    val myLocation = location
-//                    val currentLocation = LatLng(location.latitude, location.longitude)
-//                    mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
-//
-//                    mLocation = "$latitude,$longitude"
-//                    viewModel.setHospitalLocation(mLocation)
-//
-//                    viewModel.getHospitalLocation().observe(requireActivity()) { mapResults: ArrayList<MapResult>? ->
-//                        if (mapResults?.size != 0) {
-//                            showRecycleView(mapResults)
-//                            Toast.makeText(requireContext(), "ditemukan!", Toast.LENGTH_SHORT).show()
-//                        }else {
-//                            Toast.makeText(requireContext(), "Oops, lokasi Rumah Sakit tidak ditemukan!", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                }
-//            }
-//
-//        } else {
-//            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//        }
-//    }
-
-//    private fun showRecycleView(mapResults: ArrayList<MapResult>?) {
-//        val adapter = MapAdapter()
-//        if (mapResults != null) {
-//            adapter.submitList(mapResults)
-//        }
-////        adapter.submitList(mapResults)
-//        binding.rvMap.adapter = adapter
-//    }
+    private fun showRecycleView(mapResults: List<ResultsItem?>) {
+        val adapter = NearbyAdapter()
+        if (mapResults != null) {
+            adapter.submitList(mapResults)
+        }
+        binding.rvMap.adapter = adapter
+    }
 }

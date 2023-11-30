@@ -1,24 +1,30 @@
 package com.daruratindonesianurgentresponse.data.api
 
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
-    fun getApiService(): ApiService {
+    fun getApiService(token: String): ApiService {
+        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        val authInterceptor = Interceptor { chain ->
+            val req = chain.request()
+            val requestHeaders = req.newBuilder()
+                .addHeader("Authorization", "$token")
+                .build()
+            chain.proceed(requestHeaders)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://maps.googleapis.com/maps/api/place/")
+            .baseUrl("https://api.foursquare.com/v3/places/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
         return retrofit.create(ApiService::class.java)
-//        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-//        val client = OkHttpClient.Builder()
-//            .addInterceptor(loggingInterceptor)
-//            .build()
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl("https://maps.googleapis.com/maps/api/place/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .client(client)
-//            .build()
-//        return retrofit.create(ApiService::class.java)
     }
 }

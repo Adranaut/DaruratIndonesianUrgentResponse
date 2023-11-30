@@ -18,6 +18,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_KEY", "\"AIzaSyB92bJvJzAEc6agNqLYHzoGVyD8hgiH1hQ\"")
+        buildConfigField("String", "FOURSQUARE_KEY", "\"fsq3ub+ztlRqiPGKXrerbx1+L622UnuSeVeFryGsXDOQ47k=\"")
         buildConfigField("String", "PHONE_POLICE", "\"083829801796\"")
         buildConfigField("String", "PHONE_AMBULANCE", "\"083829801796\"")
         buildConfigField("String", "PHONE_FIREFIGHTER", "\"083829801796\"")
