@@ -7,14 +7,19 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.daruratindonesianurgentresponse.data.response.ResultsItem
 import com.daruratindonesianurgentresponse.databinding.ItemLocationBinding
+import com.daruratindonesianurgentresponse.utils.CalculateDistance.getDistance
+import java.text.DecimalFormat
 
 class NearbyAdapter: ListAdapter<ResultsItem, NearbyAdapter.MyViewHolder>(DIFF_CALLBACK) {
     class MyViewHolder(private val binding: ItemLocationBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(data: ResultsItem){
+            val distance = getDistance(data.geocodes?.main?.latitude as Double,
+                data.geocodes.main.longitude as Double
+            )
             binding.apply {
                 itemTvName.text = "${data.name}"
                 itemTvAddress.text = "${data.location?.formattedAddress}"
-                itemTvDistance.text = "${data.geocodes?.main?.latitude}"
+                itemTvDistance.text = DecimalFormat("#.##").format(distance) + " KM"
             }
         }
     }
@@ -25,8 +30,8 @@ class NearbyAdapter: ListAdapter<ResultsItem, NearbyAdapter.MyViewHolder>(DIFF_C
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val story = getItem(position)
-        holder.bind(story)
+        val location = getItem(position)
+        holder.bind(location)
     }
 
     companion object {

@@ -21,7 +21,7 @@
 
     <!-- Message -->
     <string name="message_granted">Access granted</string>
-    <string name="message_denied">No location access granted</string>
+    <string name="message_denied">Access denied</string>
     <string name="message_gps">Please enable internet and GPS!!!</string>
 
 

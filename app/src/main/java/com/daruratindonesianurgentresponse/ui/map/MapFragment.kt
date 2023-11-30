@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +17,8 @@ import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.data.response.ResultsItem
 import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
+import com.daruratindonesianurgentresponse.utils.LATITUDE
+import com.daruratindonesianurgentresponse.utils.LONGITUDE
 import com.daruratindonesianurgentresponse.utils.RADIUS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -38,8 +40,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private lateinit var fusedLocationClient : FusedLocationProviderClient
-    private lateinit var mLocationString: String
-    private lateinit var mLocationLatLng: LatLng
+    private lateinit var mLocation: LatLng
     private lateinit var mMap : GoogleMap
     private val boundsBuilder = LatLngBounds.Builder()
 
@@ -79,7 +80,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 id: Long
             ) {
                 when (position) {
-                    0 -> Toast.makeText(requireContext(), "Mohon pilih kategori", Toast.LENGTH_LONG).show()
+                    0 -> {
+                        binding.apply {
+                            rvMap.visibility = View.GONE
+                            tvStatusData.visibility = View.VISIBLE
+                            mMap.clear()
+                            getMyLocation()
+                        }
+                        snackBar("Please select the category!")
+                    }
                     1 -> servicesLocation("12072")
                     2 -> servicesLocation("15008")
                     3 -> servicesLocation("12071")
@@ -87,7 +96,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                Toast.makeText(requireContext(), "Mohon pilih kategori", Toast.LENGTH_LONG).show()
+                snackBar("Please select the category!")
             }
         }
     }
@@ -126,6 +135,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ) { isGranted: Boolean ->
             if (isGranted) {
                 getMyLocation()
+                snackBar(getString(R.string.message_granted))
+            } else {
+                snackBar(getString(R.string.message_denied))
             }
         }
 
@@ -138,12 +150,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
-                    mLocationString = "${location.latitude},${location.longitude}"
-                    mLocationLatLng = LatLng(location.latitude, location.longitude)
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocationLatLng, 12f))
+                    LATITUDE = location.latitude
+                    LONGITUDE = location.longitude
+                    mLocation = LatLng(location.latitude, location.longitude)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 12f))
                     mMap.addMarker(
                         MarkerOptions()
-                            .position(mLocationLatLng)
+                            .position(mLocation)
                             .title(getString(R.string.current_location))
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                     )
@@ -158,16 +171,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun servicesLocation(code: String) {
         showLoading(true)
+        binding.apply {
+            tvStatusData.visibility = View.GONE
+            binding.rvMap.visibility = View.VISIBLE
+        }
         mMap.clear()
         lifecycleScope.launch {
-            viewModel.getNearbyPlaces(mLocationString, RADIUS, code).collect { result ->
+            viewModel.getNearbyPlaces("$LATITUDE,$LONGITUDE", RADIUS, code).collect { result ->
                 result.onSuccess { credentials ->
                     credentials.results?.let { items ->
                         showRecycleView(items)
-                        boundsBuilder.include(mLocationLatLng)
+                        boundsBuilder.include(mLocation)
                         mMap.addMarker(
                             MarkerOptions()
-                                .position(mLocationLatLng)
+                                .position(mLocation)
                                 .title(getString(R.string.current_location))
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                         )
@@ -196,6 +213,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
 
                 result.onFailure {
+                    snackBar("Gagal mendapatkan data")
                     showLoading(false)
                 }
             }
@@ -214,5 +232,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         } else {
             binding.progressBar.visibility = View.GONE
         }
+    }
+
+    private fun snackBar(message: String) {
+        Snackbar.make(binding.loMain, message, Snackbar.LENGTH_LONG).show()
     }
 }

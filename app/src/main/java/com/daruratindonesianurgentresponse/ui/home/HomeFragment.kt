@@ -20,6 +20,8 @@ import com.daruratindonesianurgentresponse.BuildConfig
 import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.databinding.FragmentHomeBinding
 import com.daruratindonesianurgentresponse.utils.ADDRESS
+import com.daruratindonesianurgentresponse.utils.LATITUDE
+import com.daruratindonesianurgentresponse.utils.LONGITUDE
 import com.daruratindonesianurgentresponse.utils.STATUS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -58,7 +60,7 @@ class HomeFragment : Fragment() {
 
         //Button status
         binding.btnStatus.setOnClickListener {
-            getMyLastLocation()
+            getMyLocation()
         }
 
         //Button click listener untuk menelepon
@@ -134,13 +136,13 @@ class HomeFragment : Fragment() {
             when {
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
                     // Precise location access granted.
-                    getMyLastLocation()
+                    getMyLocation()
                     snackBar(getString(R.string.message_granted))
                 }
 
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
                     // Only approximate location access granted.
-                    getMyLastLocation()
+                    getMyLocation()
                     snackBar(getString(R.string.message_granted))
                 }
 
@@ -161,6 +163,8 @@ class HomeFragment : Fragment() {
     @Suppress("DEPRECATION")
     private fun fusedLocation(location: Location) {
         //Jika lokasi terkini ditemukan
+        LATITUDE = location.latitude
+        LONGITUDE = location.longitude
         val geoCode = Geocoder(requireContext(), Locale.getDefault())
         val address = geoCode.getFromLocation(location.latitude, location.longitude, 3)
         if (address != null) {
@@ -188,7 +192,7 @@ class HomeFragment : Fragment() {
     }
 
     @SuppressLint("ObsoleteSdkInt")
-    private fun getMyLastLocation() {
+    private fun getMyLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
                 checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
