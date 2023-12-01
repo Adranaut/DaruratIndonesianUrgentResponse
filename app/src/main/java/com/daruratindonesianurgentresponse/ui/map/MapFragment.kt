@@ -17,8 +17,11 @@ import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.data.response.ResultsItem
 import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
+import com.daruratindonesianurgentresponse.utils.AMBULANCE
+import com.daruratindonesianurgentresponse.utils.FIREFIGHTER
 import com.daruratindonesianurgentresponse.utils.LATITUDE
 import com.daruratindonesianurgentresponse.utils.LONGITUDE
+import com.daruratindonesianurgentresponse.utils.POLICE
 import com.daruratindonesianurgentresponse.utils.RADIUS
 import com.daruratindonesianurgentresponse.utils.STATUSGPS
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -88,24 +91,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             mMap.clear()
                             getMyLocation()
                         }
-                        snackBar("Please select the category!")
+                        snackBar(getString(R.string.select_category))
                     }
                     1 -> {
                         getMyLocation()
-                        servicesLocation("12072")
+                        servicesLocation(POLICE)
                     }
                     2 -> {
                         getMyLocation()
-                        servicesLocation("15008")
+                        servicesLocation(AMBULANCE)
                     }
                     3 -> {
                         getMyLocation()
-                        servicesLocation("12071")
+                        servicesLocation(FIREFIGHTER)
                     }
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                snackBar("Please select the category!")
+                snackBar(getString(R.string.select_category))
             }
         }
     }
@@ -203,7 +206,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
 
                     result.onFailure {
-                        snackBar("Gagal mendapatkan data")
+                        snackBar(getString(R.string.failed_to_get_data))
                         showLoading(false)
                     }
                 }

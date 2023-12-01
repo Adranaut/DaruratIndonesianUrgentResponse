@@ -1,5 +1,6 @@
 package com.daruratindonesianurgentresponse.ui.map
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -12,6 +13,7 @@ import java.text.DecimalFormat
 
 class NearbyAdapter: ListAdapter<ResultsItem, NearbyAdapter.MyViewHolder>(DIFF_CALLBACK) {
     class MyViewHolder(private val binding: ItemLocationBinding) : RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
         fun bind(data: ResultsItem){
             val distance = getDistance(data.geocodes?.main?.latitude as Double,
                 data.geocodes.main.longitude as Double

@@ -24,7 +24,7 @@
     <string name="message_denied">Access denied</string>
     <string name="message_gps">Please enable internet and GPS!!!</string>
 
-
+    <!-- Other -->
     <string name="address">Address</string>
     <string name="current_location">Current Location</string>
     <string name="get_current_location">Get Current Location</string>
@@ -32,5 +32,9 @@
     <string name="marker_image">Marker image</string>
     <string name="try_again">Try again</string>
     <string name="something_wrong">Something Wrong! Please check Your Internet</string>
+    <string name="select_category">Please select category!</string>
+    <string name="failed_to_get_data">Failed to get data</string>
+    <string name="there_is_no_data">There is no data</string>
+
 
 </resources>
