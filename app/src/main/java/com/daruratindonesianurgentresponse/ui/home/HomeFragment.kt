@@ -20,8 +20,6 @@ import com.daruratindonesianurgentresponse.BuildConfig
 import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.databinding.FragmentHomeBinding
 import com.daruratindonesianurgentresponse.utils.ADDRESS
-import com.daruratindonesianurgentresponse.utils.LATITUDE
-import com.daruratindonesianurgentresponse.utils.LONGITUDE
 import com.daruratindonesianurgentresponse.utils.STATUS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -128,6 +126,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     //Variable permission lokasi
     private val requestPermissionLocation =
         registerForActivityResult(
@@ -163,12 +162,9 @@ class HomeFragment : Fragment() {
     @Suppress("DEPRECATION")
     private fun fusedLocation(location: Location) {
         //Jika lokasi terkini ditemukan
-        LATITUDE = location.latitude
-        LONGITUDE = location.longitude
         val geoCode = Geocoder(requireContext(), Locale.getDefault())
         val address = geoCode.getFromLocation(location.latitude, location.longitude, 3)
         if (address != null) {
-//            viewModel.restoreData(true, address[2].getAddressLine(0))
             ADDRESS = address[2].getAddressLine(0)
             STATUS = true
             binding.apply {

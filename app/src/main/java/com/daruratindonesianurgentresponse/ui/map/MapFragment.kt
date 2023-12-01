@@ -20,6 +20,7 @@ import com.daruratindonesianurgentresponse.ui.ViewModelFactory
 import com.daruratindonesianurgentresponse.utils.LATITUDE
 import com.daruratindonesianurgentresponse.utils.LONGITUDE
 import com.daruratindonesianurgentresponse.utils.RADIUS
+import com.daruratindonesianurgentresponse.utils.STATUSGPS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -89,12 +90,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         }
                         snackBar("Please select the category!")
                     }
-                    1 -> servicesLocation("12072")
-                    2 -> servicesLocation("15008")
-                    3 -> servicesLocation("12071")
+                    1 -> {
+                        getMyLocation()
+                        servicesLocation("12072")
+                    }
+                    2 -> {
+                        getMyLocation()
+                        servicesLocation("15008")
+                    }
+                    3 -> {
+                        getMyLocation()
+                        servicesLocation("12071")
+                    }
                 }
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 snackBar("Please select the category!")
             }
@@ -108,18 +117,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (ContextCompat.checkSelfPermission(
-//                    requireContext(),
-//                    Manifest.permission.ACCESS_FINE_LOCATION
-//                ) ==PackageManager.PERMISSION_GRANTED) {
-//                getMyLocation()
-//                mMap!!.isMyLocationEnabled = true
-//            }
-//        } else {
-//            getMyLocation()
-//            mMap!!.isMyLocationEnabled = true
-//        }
 
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isIndoorLevelPickerEnabled = true
@@ -153,7 +150,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     LATITUDE = location.latitude
                     LONGITUDE = location.longitude
                     mLocation = LatLng(location.latitude, location.longitude)
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 12f))
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 11f))
                     mMap.addMarker(
                         MarkerOptions()
                             .position(mLocation)
@@ -170,53 +167,49 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun servicesLocation(code: String) {
-        showLoading(true)
-        binding.apply {
-            tvStatusData.visibility = View.GONE
-            binding.rvMap.visibility = View.VISIBLE
-        }
-        mMap.clear()
-        lifecycleScope.launch {
-            viewModel.getNearbyPlaces("$LATITUDE,$LONGITUDE", RADIUS, code).collect { result ->
-                result.onSuccess { credentials ->
-                    credentials.results?.let { items ->
-                        showRecycleView(items)
-                        boundsBuilder.include(mLocation)
-                        mMap.addMarker(
-                            MarkerOptions()
-                                .position(mLocation)
-                                .title(getString(R.string.current_location))
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                        )
-                        items.forEach { data ->
-                            val latLng = LatLng(data?.geocodes?.main?.latitude as Double, data.geocodes.main.longitude as Double)
+        if (STATUSGPS) {
+            showLoading(true)
+            binding.apply {
+                tvStatusData.visibility = View.GONE
+                binding.rvMap.visibility = View.VISIBLE
+            }
+            mMap.clear()
+            lifecycleScope.launch {
+                viewModel.getNearbyPlaces("$LATITUDE,$LONGITUDE", RADIUS, code).collect { result ->
+                    result.onSuccess { credentials ->
+                        credentials.results?.let { items ->
+                            showRecycleView(items)
+                            boundsBuilder.include(mLocation)
                             mMap.addMarker(
                                 MarkerOptions()
-                                    .position(latLng)
-                                    .title(data.name)
-                                    .snippet(data.location?.formattedAddress)
+                                    .position(mLocation)
+                                    .title(getString(R.string.current_location))
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                             )
-                            boundsBuilder.include(latLng)
+                            items.forEach { data ->
+                                val latLng = LatLng(data?.geocodes?.main?.latitude as Double, data.geocodes.main.longitude as Double)
+                                mMap.addMarker(
+                                    MarkerOptions()
+                                        .position(latLng)
+                                        .title(data.name)
+                                        .snippet(data.location?.formattedAddress)
+                                )
+                                boundsBuilder.include(latLng)
+                            }
+                            boundsBuilder.build()
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 11f))
+                            showLoading(false)
                         }
+                    }
 
-                        val bounds: LatLngBounds = boundsBuilder.build()
-                        mMap.animateCamera(
-                            CameraUpdateFactory.newLatLngBounds(
-                                bounds,
-                                resources.displayMetrics.widthPixels,
-                                resources.displayMetrics.heightPixels,
-                                180
-                            )
-                        )
+                    result.onFailure {
+                        snackBar("Gagal mendapatkan data")
                         showLoading(false)
                     }
                 }
-
-                result.onFailure {
-                    snackBar("Gagal mendapatkan data")
-                    showLoading(false)
-                }
             }
+        } else {
+            snackBar(getString(R.string.message_gps))
         }
     }
 

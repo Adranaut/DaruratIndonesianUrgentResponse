@@ -14,7 +14,7 @@
     <string name="yes">Yes</string>
 
     <!-- Array -->
-    <string name="chose">-- Chose type --</string>
+    <string name="chose">-- Choose Category --</string>
     <string name="police">Police</string>
     <string name="ambulance">Ambulance</string>
     <string name="firefighter">Firefighter</string>
