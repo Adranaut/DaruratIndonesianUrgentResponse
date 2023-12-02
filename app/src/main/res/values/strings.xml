@@ -15,9 +15,27 @@
 
     <!-- Array -->
     <string name="chose">-- Choose Category --</string>
+    <string name="urgent_call">Panggilan Darurat</string>
     <string name="police">Police</string>
-    <string name="ambulance">Ambulance</string>
-    <string name="firefighter">Firefighter</string>
+    <string name="ambulance">Ambulance atau Kemenkes</string>
+    <string name="firefighter">Pemadam Kebakaran</string>
+    <string name="basarnas">Basarnas</string>
+    <string name="natural_disasters">Posko Bencana Alam</string>
+    <string name="national_alert">Posko Kewaspadaan Nasional</string>
+    <string name="pln">PLN</string>
+    <string name="pmi">PMI</string>
+    <string name="bpom">BPOM</string>
+
+    <string name="urgent_cal_number">112</string>
+    <string name="police_number">110</string>
+    <string name="ambulance_number">119</string>
+    <string name="firefighter_number">113</string>
+    <string name="basarnas_number">115</string>
+    <string name="natural_disasters_number">129</string>
+    <string name="national_alert_number">122</string>
+    <string name="pln_number">123</string>
+    <string name="pmi_number">117</string>
+    <string name="bpom_number">1500533</string>
 
     <!-- Message -->
     <string name="message_granted">Access granted</string>
@@ -35,6 +53,7 @@
     <string name="select_category">Please select category!</string>
     <string name="failed_to_get_data">Failed to get data</string>
     <string name="there_is_no_data">There is no data</string>
-
+    <string name="call">Call</string>
+    <string name="service_name">Service Name</string>
 
 </resources>

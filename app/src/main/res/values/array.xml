@@ -8,4 +8,30 @@
         <item>@string/firefighter</item>
     </string-array>
 
+    <string-array name="service_name">
+        <item>@string/urgent_call</item>
+        <item>@string/police</item>
+        <item>@string/ambulance</item>
+        <item>@string/firefighter</item>
+        <item>@string/basarnas</item>
+        <item>@string/natural_disasters</item>
+        <item>@string/national_alert</item>
+        <item>@string/pln</item>
+        <item>@string/pmi</item>
+        <item>@string/bpom</item>
+    </string-array>
+
+    <string-array name="service_number">
+        <item>@string/urgent_cal_number</item>
+        <item>@string/police_number</item>
+        <item>@string/ambulance_number</item>
+        <item>@string/firefighter_number</item>
+        <item>@string/basarnas_number</item>
+        <item>@string/natural_disasters_number</item>
+        <item>@string/national_alert_number</item>
+        <item>@string/pln_number</item>
+        <item>@string/pmi_number</item>
+        <item>@string/bpom_number</item>
+    </string-array>
+
 </resources>

@@ -172,15 +172,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun servicesLocation(code: String) {
         if (STATUSGPS) {
             showLoading(true)
-            binding.apply {
-                tvStatusData.visibility = View.GONE
-                binding.rvMap.visibility = View.VISIBLE
-            }
             mMap.clear()
             lifecycleScope.launch {
                 viewModel.getNearbyPlaces("$LATITUDE,$LONGITUDE", RADIUS, code).collect { result ->
                     result.onSuccess { credentials ->
                         credentials.results?.let { items ->
+                            binding.apply {
+                                tvStatusData.visibility = View.GONE
+                                binding.rvMap.visibility = View.VISIBLE
+                            }
                             showRecycleView(items)
                             boundsBuilder.include(mLocation)
                             mMap.addMarker(

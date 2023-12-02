@@ -16,8 +16,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.daruratindonesianurgentresponse.BuildConfig
 import com.daruratindonesianurgentresponse.R
+import com.daruratindonesianurgentresponse.data.response.CallCenter
 import com.daruratindonesianurgentresponse.databinding.FragmentHomeBinding
 import com.daruratindonesianurgentresponse.utils.ADDRESS
 import com.daruratindonesianurgentresponse.utils.STATUS
@@ -31,6 +33,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val list = ArrayList<CallCenter>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +59,10 @@ class HomeFragment : Fragment() {
             }
         }
 
+        list.addAll(getList())
+        binding.rvCallCenter.layoutManager = LinearLayoutManager(requireContext())
+        showRecyclerView()
+
         //Button status
         binding.btnStatus.setOnClickListener {
             getMyLocation()
@@ -76,6 +83,17 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    private fun getList(): ArrayList<CallCenter> {
+        val serviceName = resources.getStringArray(R.array.service_name)
+        val serviceNumber = resources.getStringArray(R.array.service_number)
+        val list = ArrayList<CallCenter>()
+        for (i in serviceName.indices) {
+            val callCenter = CallCenter(serviceName[i], serviceNumber[i])
+            list.add(callCenter)
+        }
+        return list
     }
 
     //Variable permission panggilan
@@ -125,7 +143,6 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
     }
-
 
     //Variable permission lokasi
     private val requestPermissionLocation =
@@ -233,5 +250,17 @@ class HomeFragment : Fragment() {
     //Membuat snack bar
     private fun snackBar(message: String) {
         Snackbar.make(binding.loMain, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun showRecyclerView() {
+        val adapter = CallCenterAdapter()
+        adapter.submitList(list)
+        binding.rvCallCenter.adapter = adapter
+
+        adapter.setOnItemClickCallback(object : CallCenterAdapter.OnItemClickCallback {
+            override fun onItemClicked(data: CallCenter) {
+                setupCall(BuildConfig.PHONE_AMBULANCE)
+            }
+        })
     }
 }
