@@ -53,7 +53,9 @@
     <string name="select_category">Please select category!</string>
     <string name="failed_to_get_data">Failed to get data</string>
     <string name="there_is_no_data">There is no data</string>
-    <string name="call">Call</string>
     <string name="service_name">Service Name</string>
+    <string name="point_of_interest_name">Point of Interest Name</string>
+    <string name="point_of_interest_address">Point of Interest Address \nJl. Example</string>
+    <string name="distance">1,7 KM</string>
 
 </resources>

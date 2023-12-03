@@ -22,7 +22,7 @@
             android:id="@+id/item_tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Point of Interest Name"
+            android:text="@string/point_of_interest_name"
             android:textStyle="bold"
             android:textSize="16sp"
             android:ellipsize="end"
@@ -32,7 +32,7 @@
             android:id="@+id/item_tv_address"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:text="Point of Interest Address \nJl. Example"
+            android:text="@string/point_of_interest_address"
             android:textSize="12sp"
             android:ellipsize="end"
             android:maxLines="2" />
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="12sp"
-            android:text="1,7 KM"/>
+            android:text="@string/distance"/>
 
     </LinearLayout>
 

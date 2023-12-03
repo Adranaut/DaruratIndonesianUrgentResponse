@@ -17,12 +17,11 @@ import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.data.response.ResultsItem
 import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
-import com.daruratindonesianurgentresponse.utils.AMBULANCE
 import com.daruratindonesianurgentresponse.utils.FIREFIGHTER
 import com.daruratindonesianurgentresponse.utils.LATITUDE
 import com.daruratindonesianurgentresponse.utils.LONGITUDE
+import com.daruratindonesianurgentresponse.utils.MEDICINE
 import com.daruratindonesianurgentresponse.utils.POLICE
-import com.daruratindonesianurgentresponse.utils.RADIUS
 import com.daruratindonesianurgentresponse.utils.STATUSGPS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -99,7 +98,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                     2 -> {
                         getMyLocation()
-                        servicesLocation(AMBULANCE)
+                        servicesLocation(MEDICINE)
                     }
                     3 -> {
                         getMyLocation()
@@ -174,7 +173,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             showLoading(true)
             mMap.clear()
             lifecycleScope.launch {
-                viewModel.getNearbyPlaces("$LATITUDE,$LONGITUDE", RADIUS, code).collect { result ->
+                viewModel.getNearbyPlaces("$LATITUDE", "$LONGITUDE", code).collect { result ->
                     result.onSuccess { credentials ->
                         credentials.results?.let { items ->
                             binding.apply {
@@ -190,12 +189,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                             )
                             items.forEach { data ->
-                                val latLng = LatLng(data?.geocodes?.main?.latitude as Double, data.geocodes.main.longitude as Double)
+                                val latLng = LatLng(data?.geometry?.location?.lat as Double, data.geometry.location.lng as Double)
                                 mMap.addMarker(
                                     MarkerOptions()
                                         .position(latLng)
                                         .title(data.name)
-                                        .snippet(data.location?.formattedAddress)
+                                        .snippet(data.vicinity)
                                 )
                                 boundsBuilder.include(latLng)
                             }

@@ -59,6 +59,7 @@ class HomeFragment : Fragment() {
             }
         }
 
+        //Membuat list untuk call center
         list.addAll(getList())
         binding.rvCallCenter.layoutManager = LinearLayoutManager(requireContext())
         showRecyclerView()
@@ -66,17 +67,6 @@ class HomeFragment : Fragment() {
         //Button status
         binding.btnStatus.setOnClickListener {
             getMyLocation()
-        }
-
-        //Button click listener untuk menelepon
-        binding.btnPolice.setOnClickListener {
-            setupCall(BuildConfig.PHONE_POLICE)
-        }
-        binding.btnAmbulance.setOnClickListener {
-            setupCall(BuildConfig.PHONE_AMBULANCE)
-        }
-        binding.btnFirefighter.setOnClickListener {
-            setupCall(BuildConfig.PHONE_FIREFIGHTER)
         }
     }
 
@@ -259,7 +249,7 @@ class HomeFragment : Fragment() {
 
         adapter.setOnItemClickCallback(object : CallCenterAdapter.OnItemClickCallback {
             override fun onItemClicked(data: CallCenter) {
-                setupCall(BuildConfig.PHONE_AMBULANCE)
+                setupCall(BuildConfig.PHONE_POLICE)
             }
         })
     }

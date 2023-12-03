@@ -1,15 +1,14 @@
 package com.daruratindonesianurgentresponse.data.api
 
-import com.daruratindonesianurgentresponse.data.response.NearbyResponse
+import com.daruratindonesianurgentresponse.data.response.GoogleResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ApiService {
-
-    @GET("search")
+    @GET("places")
     suspend fun getNearbyPlaces(
-        @Query("ll") key: String,
-        @Query("radius") keyword: String,
-        @Query("categories") location: String,
-    ): NearbyResponse
+        @Query("lat") key: String,
+        @Query("lng") keyword: String,
+        @Query("type") location: String,
+    ): GoogleResponse
 }

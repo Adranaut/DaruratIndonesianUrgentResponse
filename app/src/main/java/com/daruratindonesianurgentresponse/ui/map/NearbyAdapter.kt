@@ -8,19 +8,20 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.daruratindonesianurgentresponse.data.response.ResultsItem
 import com.daruratindonesianurgentresponse.databinding.ItemLocationBinding
-import com.daruratindonesianurgentresponse.utils.CalculateDistance.getDistance
+import com.daruratindonesianurgentresponse.utils.CalculateDistance
 import java.text.DecimalFormat
 
 class NearbyAdapter: ListAdapter<ResultsItem, NearbyAdapter.MyViewHolder>(DIFF_CALLBACK) {
     class MyViewHolder(private val binding: ItemLocationBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(data: ResultsItem){
-            val distance = getDistance(data.geocodes?.main?.latitude as Double,
-                data.geocodes.main.longitude as Double
+            val distance = CalculateDistance.getDistance(
+                data.geometry?.location?.lat as Double,
+                data.geometry.location.lng as Double
             )
             binding.apply {
                 itemTvName.text = "${data.name}"
-                itemTvAddress.text = "${data.location?.formattedAddress}"
+                itemTvAddress.text = "${data.vicinity}"
                 itemTvDistance.text = DecimalFormat("#.##").format(distance) + " KM"
             }
         }

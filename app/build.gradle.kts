@@ -18,10 +18,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_KEY", "\"AIzaSyB92bJvJzAEc6agNqLYHzoGVyD8hgiH1hQ\"")
-        buildConfigField("String", "FOURSQUARE_KEY", "\"fsq3ub+ztlRqiPGKXrerbx1+L622UnuSeVeFryGsXDOQ47k=\"")
+//        buildConfigField("String", "FOURSQUARE_KEY", "\"fsq3ub+ztlRqiPGKXrerbx1+L622UnuSeVeFryGsXDOQ47k=\"")
         buildConfigField("String", "PHONE_POLICE", "\"083829801796\"")
-        buildConfigField("String", "PHONE_AMBULANCE", "\"083829801796\"")
-        buildConfigField("String", "PHONE_FIREFIGHTER", "\"083829801796\"")
+//        buildConfigField("String", "PHONE_AMBULANCE", "\"083829801796\"")
+//        buildConfigField("String", "PHONE_FIREFIGHTER", "\"083829801796\"")
     }
 
     buildTypes {
@@ -64,15 +64,15 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
-    //Google Place
-    implementation("com.google.android.libraries.places:places:3.3.0")
+//    //Google Place
+//    implementation("com.google.android.libraries.places:places:3.3.0")
 
     //API
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
     //Simple Location
 //    implementation("com.github.delight-im:Android-SimpleLocation:v1.1.0")
