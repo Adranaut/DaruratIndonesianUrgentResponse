@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Darurat Indonesian Urgent Response</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Confirmation Preferences -->
     <string name="pref_key_confirm">key_confirmation</string>
@@ -42,6 +41,16 @@
     <string name="message_denied">Access denied</string>
     <string name="message_gps">Please enable internet and GPS!!!</string>
 
+    <!-- Night Mode Preferences -->
+    <string name="pref_dark_title">Dark mode</string>
+    <string name="pref_key_dark" translatable="false">key_dark_mode</string>
+    <string name="pref_dark_follow_system" translatable="false">follow_system</string>
+    <string name="pref_dark_on" translatable="false">on</string>
+    <string name="pref_dark_off" translatable="false">off</string>
+    <string name="dark_mode_auto">Automatic</string>
+    <string name="dark_mode_on">Dark mode</string>
+    <string name="dark_mode_off">Light mode</string>
+
     <!-- Other -->
     <string name="address">Address</string>
     <string name="current_location">Current Location</string>
@@ -57,5 +66,12 @@
     <string name="point_of_interest_name">Point of Interest Name</string>
     <string name="point_of_interest_address">Point of Interest Address \nJl. Example</string>
     <string name="distance">1,7 KM</string>
+    <string name="show_marker_in_map">Show marker in map</string>
+    <string name="phone_icon">Phone icon</string>
+    <string name="marker_icon">Marker icon</string>
+    <string name="home">Home</string>
+    <string name="map">Map</string>
+    <string name="chatbot">ChatBot</string>
+    <string name="setting">Setting</string>
 
 </resources>

@@ -19,10 +19,13 @@ import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
 import com.daruratindonesianurgentresponse.utils.FIREFIGHTER
 import com.daruratindonesianurgentresponse.utils.LATITUDE
+import com.daruratindonesianurgentresponse.utils.LOCATION
 import com.daruratindonesianurgentresponse.utils.LONGITUDE
 import com.daruratindonesianurgentresponse.utils.MEDICINE
 import com.daruratindonesianurgentresponse.utils.POLICE
 import com.daruratindonesianurgentresponse.utils.STATUSGPS
+import com.daruratindonesianurgentresponse.utils.STATUSMAP
+import com.daruratindonesianurgentresponse.utils.TYPE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -90,19 +93,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             mMap.clear()
                             getMyLocation()
                         }
+                        STATUSMAP = false
                         snackBar(getString(R.string.select_category))
                     }
                     1 -> {
                         getMyLocation()
                         servicesLocation(POLICE)
+                        TYPE = POLICE
                     }
                     2 -> {
                         getMyLocation()
                         servicesLocation(MEDICINE)
+                        TYPE = MEDICINE
                     }
                     3 -> {
                         getMyLocation()
                         servicesLocation(FIREFIGHTER)
+                        TYPE = FIREFIGHTER
                     }
                 }
             }
@@ -125,6 +132,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mMap.uiSettings.isCompassEnabled = true
         mMap.uiSettings.isMapToolbarEnabled = true
 
+        //Cek lokasi terkini apakah sudah pernah tampil
+//        if (STATUSMAP) {
+//            binding.apply {
+//                tvStatusData.visibility = View.GONE
+//                rvMap.visibility = View.VISIBLE
+//                getMyLocation()
+//                servicesLocation(TYPE)
+//            }
+//        } else {
+//
+//        }
         getMyLocation()
     }
 
@@ -143,7 +161,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun getMyLocation() {
         showLoading(true)
         if (ContextCompat.checkSelfPermission(
-                this.requireContext(),
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
@@ -152,6 +170,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     LATITUDE = location.latitude
                     LONGITUDE = location.longitude
                     mLocation = LatLng(location.latitude, location.longitude)
+                    LOCATION = mLocation
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 11f))
                     mMap.addMarker(
                         MarkerOptions()
@@ -176,15 +195,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 viewModel.getNearbyPlaces("$LATITUDE", "$LONGITUDE", code).collect { result ->
                     result.onSuccess { credentials ->
                         credentials.results?.let { items ->
+                            STATUSMAP = true
                             binding.apply {
                                 tvStatusData.visibility = View.GONE
                                 binding.rvMap.visibility = View.VISIBLE
                             }
                             showRecycleView(items)
-                            boundsBuilder.include(mLocation)
+                            boundsBuilder.include(LOCATION)
                             mMap.addMarker(
                                 MarkerOptions()
-                                    .position(mLocation)
+                                    .position(LOCATION)
                                     .title(getString(R.string.current_location))
                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                             )
@@ -199,12 +219,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 boundsBuilder.include(latLng)
                             }
                             boundsBuilder.build()
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 11f))
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOCATION, 11f))
                             showLoading(false)
                         }
                     }
 
                     result.onFailure {
+                        STATUSMAP = false
                         snackBar(getString(R.string.failed_to_get_data))
                         showLoading(false)
                     }

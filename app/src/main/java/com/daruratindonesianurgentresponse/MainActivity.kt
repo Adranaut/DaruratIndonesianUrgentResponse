@@ -6,13 +6,17 @@ import android.os.Bundle
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.daruratindonesianurgentresponse.databinding.ActivityMainBinding
 import com.daruratindonesianurgentresponse.ui.chatbot.ChatBotFragment
 import com.daruratindonesianurgentresponse.ui.home.HomeFragment
 import com.daruratindonesianurgentresponse.ui.map.MapFragment
 import com.daruratindonesianurgentresponse.ui.setting.SettingFragment
+import com.daruratindonesianurgentresponse.utils.BOTTOMNAV
+import com.daruratindonesianurgentresponse.utils.DarkMode
 import com.daruratindonesianurgentresponse.utils.GpsStatusListener
 import com.daruratindonesianurgentresponse.utils.TurnOnGps
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -21,6 +25,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,11 +37,28 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        preferences.getString(
+            getString(R.string.pref_key_dark),
+            getString(R.string.pref_dark_follow_system)
+        )?.apply {
+            val mode = DarkMode.valueOf(this.uppercase(Locale.US))
+            AppCompatDelegate.setDefaultNightMode(mode.value)
+        }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        replaceFragment(HomeFragment())
+//        replaceFragment(HomeFragment())
         binding.bottomNavBar.setItemSelected(R.id.bottom_home)
         bottomNavSetup()
+
+        when (BOTTOMNAV) {
+            1 -> replaceFragment(HomeFragment())
+            2 -> replaceFragment(MapFragment())
+            3 -> replaceFragment(ChatBotFragment())
+            4 -> replaceFragment(SettingFragment())
+        }
+
         getMyLocation()
 
         val gpsStatusListener = GpsStatusListener(this)
@@ -67,10 +89,22 @@ class MainActivity : AppCompatActivity() {
         //Untuk Menu Selected Listener atau untuk Navigasi Fragment
         binding.bottomNavBar.setOnItemSelectedListener {
             when (it) {
-                R.id.bottom_home -> replaceFragment(HomeFragment())
-                R.id.bottom_map  -> replaceFragment(MapFragment())
-                R.id.bottom_chatbot  -> replaceFragment(ChatBotFragment())
-                R.id.bottom_setting  -> replaceFragment(SettingFragment())
+                R.id.bottom_home -> {
+                    replaceFragment(HomeFragment())
+                    BOTTOMNAV = 1
+                }
+                R.id.bottom_map -> {
+                    replaceFragment(MapFragment())
+                    BOTTOMNAV = 2
+                }
+                R.id.bottom_chatbot -> {
+                    replaceFragment(ChatBotFragment())
+                    BOTTOMNAV = 3
+                }
+                R.id.bottom_setting -> {
+                    replaceFragment(SettingFragment())
+                    BOTTOMNAV = 4
+                }
             }
         }
     }

@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.daruratindonesianurgentresponse.BuildConfig
 import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.data.response.CallCenter
 import com.daruratindonesianurgentresponse.databinding.FragmentHomeBinding
@@ -50,7 +49,7 @@ class HomeFragment : Fragment() {
         //Inisialisasi lokasi terkini
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        //Cek lokasi terkini
+        //Cek lokasi terkini apakah sudah pernah tampil
         if (STATUS) {
             binding.apply {
                 loStatus.visibility = View.GONE
@@ -249,7 +248,7 @@ class HomeFragment : Fragment() {
 
         adapter.setOnItemClickCallback(object : CallCenterAdapter.OnItemClickCallback {
             override fun onItemClicked(data: CallCenter) {
-                setupCall(BuildConfig.PHONE_POLICE)
+                setupCall(data.serviceNumber!!)
             }
         })
     }

@@ -5,25 +5,25 @@
     <item
         android:id="@+id/bottom_home"
         android:icon="@drawable/baseline_local_phone_24"
-        android:title="Home"
+        android:title="@string/home"
         app:cnb_iconColor="@color/tosca"/>
 
     <item
         android:id="@+id/bottom_map"
         android:icon="@drawable/baseline_map_24"
-        android:title="Map"
+        android:title="@string/map"
         app:cnb_iconColor="@color/tosca"/>
 
     <item
         android:id="@+id/bottom_chatbot"
         android:icon="@drawable/baseline_live_help_24"
-        android:title="ChatBot"
+        android:title="@string/chatbot"
         app:cnb_iconColor="@color/tosca"/>
 
     <item
         android:id="@+id/bottom_setting"
         android:icon="@drawable/baseline_settings_24"
-        android:title="Setting"
+        android:title="@string/setting"
         app:cnb_iconColor="@color/tosca"/>
 
 </menu>

@@ -19,7 +19,8 @@
             <com.google.android.gms.maps.MapView
                 android:id="@+id/map_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:contentDescription="@string/show_marker_in_map"/>
 
             <Spinner
                 android:id="@+id/spinner_type"
