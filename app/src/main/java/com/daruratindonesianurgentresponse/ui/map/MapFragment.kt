@@ -44,10 +44,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ViewModelFactory.getInstance(requireContext())
     }
     private var _binding: FragmentMapBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var fusedLocationClient : FusedLocationProviderClient
+    private val binding get() = _binding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var mLocation: LatLng
-    private lateinit var mMap : GoogleMap
+    private lateinit var mMap: GoogleMap
     private val boundsBuilder = LatLngBounds.Builder()
 
     @Deprecated("Deprecated in Java")
@@ -55,7 +55,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        binding.apply {
+        binding?.apply {
             mapView.onCreate(savedInstanceState)
             mapView.onResume()
             mapView.getMapAsync(this@MapFragment)
@@ -76,9 +76,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        binding.rvMap.layoutManager = LinearLayoutManager(requireContext())
+        binding?.rvMap?.layoutManager = LinearLayoutManager(requireContext())
 
-        binding.spinnerType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding?.spinnerType?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -87,7 +87,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             ) {
                 when (position) {
                     0 -> {
-                        binding.apply {
+                        binding?.apply {
                             rvMap.visibility = View.GONE
                             tvStatusData.visibility = View.VISIBLE
                             mMap.clear()
@@ -113,6 +113,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 snackBar(getString(R.string.select_category))
             }
@@ -133,17 +134,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mMap.uiSettings.isMapToolbarEnabled = true
 
         //Cek lokasi terkini apakah sudah pernah tampil
-//        if (STATUSMAP) {
-//            binding.apply {
-//                tvStatusData.visibility = View.GONE
-//                rvMap.visibility = View.VISIBLE
-//                getMyLocation()
-//                servicesLocation(TYPE)
-//            }
-//        } else {
-//
-//        }
-        getMyLocation()
+        if (STATUSMAP) {
+            binding?.apply {
+                tvStatusData.visibility = View.GONE
+                rvMap.visibility = View.VISIBLE
+                getMyLocation()
+                servicesLocation(TYPE)
+            }
+        } else {
+            binding?.apply {
+                tvStatusData.visibility = View.VISIBLE
+                rvMap.visibility = View.GONE
+                getMyLocation()
+            }
+        }
     }
 
     private val requestPermissionLauncher =
@@ -159,30 +163,44 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
     private fun getMyLocation() {
-        showLoading(true)
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    LATITUDE = location.latitude
-                    LONGITUDE = location.longitude
-                    mLocation = LatLng(location.latitude, location.longitude)
-                    LOCATION = mLocation
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 11f))
-                    mMap.addMarker(
-                        MarkerOptions()
-                            .position(mLocation)
-                            .title(getString(R.string.current_location))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                    )
+        val currentView = view
+        if (currentView != null) {
+            // Use viewLifecycleOwner.lifecycleScope for coroutines
+            viewLifecycleOwner.lifecycleScope.launch {
+                val context = context ?: return@launch // Check if the context is available
+
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        if (location != null) {
+                            LATITUDE = location.latitude
+                            LONGITUDE = location.longitude
+                            mLocation = LatLng(location.latitude, location.longitude)
+                            LOCATION = mLocation
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 11f))
+                            mMap.addMarker(
+                                MarkerOptions()
+                                    .position(mLocation)
+                                    .title(getString(R.string.current_location))
+                                    .icon(
+                                        BitmapDescriptorFactory.defaultMarker(
+                                            BitmapDescriptorFactory.HUE_GREEN
+                                        )
+                                    )
+                            )
+                        }
+                        showLoading(false)
+                    }
+                } else {
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    showLoading(false)
                 }
-                showLoading(false)
             }
         } else {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            // Handle the case when the view is not available (null)
             showLoading(false)
         }
     }
@@ -191,14 +209,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         if (STATUSGPS) {
             showLoading(true)
             mMap.clear()
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.getNearbyPlaces("$LATITUDE", "$LONGITUDE", code).collect { result ->
                     result.onSuccess { credentials ->
                         credentials.results?.let { items ->
                             STATUSMAP = true
-                            binding.apply {
+                            binding?.apply {
                                 tvStatusData.visibility = View.GONE
-                                binding.rvMap.visibility = View.VISIBLE
+                                rvMap.visibility = View.VISIBLE
                             }
                             showRecycleView(items)
                             boundsBuilder.include(LOCATION)
@@ -206,10 +224,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 MarkerOptions()
                                     .position(LOCATION)
                                     .title(getString(R.string.current_location))
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                                    .icon(
+                                        BitmapDescriptorFactory.defaultMarker(
+                                            BitmapDescriptorFactory.HUE_GREEN
+                                        )
+                                    )
                             )
                             items.forEach { data ->
-                                val latLng = LatLng(data?.geometry?.location?.lat as Double, data.geometry.location.lng as Double)
+                                val latLng = LatLng(
+                                    data?.geometry?.location?.lat as Double,
+                                    data.geometry.location.lng as Double
+                                )
                                 mMap.addMarker(
                                     MarkerOptions()
                                         .position(latLng)
@@ -239,18 +264,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun showRecycleView(mapResults: List<ResultsItem?>) {
         val adapter = NearbyAdapter()
         adapter.submitList(mapResults)
-        binding.rvMap.adapter = adapter
+        binding?.rvMap?.adapter = adapter
     }
 
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
-            binding.progressBar.visibility = View.VISIBLE
+            binding?.progressBar?.visibility = View.VISIBLE
         } else {
-            binding.progressBar.visibility = View.GONE
+            binding?.progressBar?.visibility = View.GONE
         }
     }
 
     private fun snackBar(message: String) {
-        Snackbar.make(binding.loMain, message, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(binding!!.loMain, message, Snackbar.LENGTH_LONG).show()
     }
 }

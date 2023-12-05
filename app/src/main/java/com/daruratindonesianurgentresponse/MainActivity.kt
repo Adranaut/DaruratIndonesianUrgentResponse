@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //Inisialisasi awal
         val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         preferences.getString(
             getString(R.string.pref_key_dark),
@@ -48,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-//        replaceFragment(HomeFragment())
         binding.bottomNavBar.setItemSelected(R.id.bottom_home)
         bottomNavSetup()
 
@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         getMyLocation()
 
+        //Mendapatkan lokasi terkini berdasarkan GPS
         val gpsStatusListener = GpsStatusListener(this)
         val turnOnGps = TurnOnGps(this)
         var isGpsStatusChanged: Boolean? = null
@@ -157,8 +158,6 @@ class MainActivity : AppCompatActivity() {
                         if (locationResult == null) {
                             return
                         }
-//                        LATITUDE = locationResult.lastLocation!!.latitude
-//                        LONGITUDE = locationResult.lastLocation!!.longitude
                     }
                 }
             }
@@ -169,6 +168,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun snackBar(message: String) {
+        //Membuat pesan snack bar
         Snackbar.make(binding.frameLayout, message, Snackbar.LENGTH_LONG).show()
     }
 }
