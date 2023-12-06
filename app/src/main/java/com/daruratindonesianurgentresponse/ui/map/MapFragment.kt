@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -46,7 +47,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var mLocation: LatLng
     private lateinit var mMap: GoogleMap
     private val boundsBuilder = LatLngBounds.Builder()
 
@@ -163,12 +163,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
     private fun getMyLocation() {
-        val currentView = view
-        if (currentView != null) {
-            // Use viewLifecycleOwner.lifecycleScope for coroutines
-            viewLifecycleOwner.lifecycleScope.launch {
-                val context = context ?: return@launch // Check if the context is available
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Delay for 3 seconds
+            delay(3000)
 
+            val currentView = view
+            if (currentView != null) {
+                val context = context ?: return@launch // Check if the context is available
                 if (ContextCompat.checkSelfPermission(
                         context,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -178,12 +179,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         if (location != null) {
                             LATITUDE = location.latitude
                             LONGITUDE = location.longitude
-                            mLocation = LatLng(location.latitude, location.longitude)
-                            LOCATION = mLocation
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocation, 11f))
+                            LOCATION = LatLng(LATITUDE, LONGITUDE)
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOCATION, 12f))
                             mMap.addMarker(
                                 MarkerOptions()
-                                    .position(mLocation)
+                                    .position(LOCATION)
                                     .title(getString(R.string.current_location))
                                     .icon(
                                         BitmapDescriptorFactory.defaultMarker(
@@ -192,22 +192,62 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     )
                             )
                         }
-                        showLoading(false)
                     }
-                } else {
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     showLoading(false)
+                } else {
+                    showLoading(false)
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
+            } else {
+                // Handle the case when the view is not available (null)
+                showLoading(false)
             }
-        } else {
-            // Handle the case when the view is not available (null)
-            showLoading(false)
         }
+//        // Delay untuk 3 detik
+//        Thread.sleep(3000)
+//
+//        val currentView = view
+//        if (currentView != null) {
+//            viewLifecycleOwner.lifecycleScope.launch {
+//                val context = context ?: return@launch // Check if the context is available
+//                if (ContextCompat.checkSelfPermission(
+//                        context,
+//                        Manifest.permission.ACCESS_FINE_LOCATION
+//                    ) == PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+//                        if (location != null) {
+//                            LATITUDE = location.latitude
+//                            LONGITUDE = location.longitude
+//                            LOCATION = LatLng(LATITUDE, LONGITUDE)
+//                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOCATION, 12f))
+//                            mMap.addMarker(
+//                                MarkerOptions()
+//                                    .position(LOCATION)
+//                                    .title(getString(R.string.current_location))
+//                                    .icon(
+//                                        BitmapDescriptorFactory.defaultMarker(
+//                                            BitmapDescriptorFactory.HUE_GREEN
+//                                        )
+//                                    )
+//                            )
+//                        }
+//                    }
+//                    showLoading(false)
+//                } else {
+//                    showLoading(false)
+//                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+//                }
+//            }
+//        } else {
+//            // Handle the case when the view is not available (null)
+//            showLoading(false)
+//        }
     }
 
     private fun servicesLocation(code: String) {
+        showLoading(true)
         if (STATUSGPS) {
-            showLoading(true)
             mMap.clear()
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.getNearbyPlaces("$LATITUDE", "$LONGITUDE", code).collect { result ->
@@ -243,8 +283,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 )
                                 boundsBuilder.include(latLng)
                             }
-                            boundsBuilder.build()
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOCATION, 11f))
+                            val bounds: LatLngBounds = boundsBuilder.build()
+                            mMap.animateCamera(
+                                CameraUpdateFactory.newLatLngBounds(
+                                    bounds,
+                                    resources.displayMetrics.widthPixels,
+                                    resources.displayMetrics.heightPixels,
+                                    350
+                                )
+                            )
                             showLoading(false)
                         }
                     }
@@ -257,6 +304,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         } else {
+            showLoading(false)
             snackBar(getString(R.string.message_gps))
         }
     }

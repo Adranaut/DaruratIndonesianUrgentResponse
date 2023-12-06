@@ -1,13 +1,11 @@
 package com.daruratindonesianurgentresponse.ui.home
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.data.response.CallCenter
@@ -25,6 +24,8 @@ import com.daruratindonesianurgentresponse.utils.STATUS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class HomeFragment : Fragment() {
@@ -45,6 +46,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentHomeBinding.bind(view)
+
+        showLoading(false)
 
         //Inisialisasi lokasi terkini
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -138,23 +141,17 @@ class HomeFragment : Fragment() {
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            when {
-                permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
-                    // Precise location access granted.
-                    getMyLocation()
-                    snackBar(getString(R.string.message_granted))
-                }
+            val locationPermissionGranted =
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false ||
+                        permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
 
-                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
-                    // Only approximate location access granted.
-                    getMyLocation()
-                    snackBar(getString(R.string.message_granted))
-                }
-
-                else -> {
-                    // No location access granted.
-                    snackBar(getString(R.string.message_denied))
-                }
+            if (locationPermissionGranted) {
+                // Precise or approximate location access granted.
+                getMyLocation()
+                snackBar(getString(R.string.message_granted))
+            } else {
+                // No location access granted.
+                snackBar(getString(R.string.message_denied))
             }
         }
 
@@ -191,18 +188,24 @@ class HomeFragment : Fragment() {
                 tvStatus.text = getString(R.string.something_wrong)
             }
         }
+        showLoading(false)
     }
 
-    @SuppressLint("ObsoleteSdkInt")
     private fun getMyLocation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        showLoading(true)
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Delay untuk 3 detik
+            delay(3000)
+
+            val activity = requireActivity()
             if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
                 checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
             ) {
-                fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+                fusedLocationClient.lastLocation.addOnSuccessListener(activity) { location ->
                     if (location != null) {
                         fusedLocation(location)
                     } else {
+                        showLoading(false)
                         snackBar(getString(R.string.message_gps))
                     }
                 }
@@ -213,25 +216,7 @@ class HomeFragment : Fragment() {
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     )
                 )
-            }
-        } else {
-            if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
-                checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-            ) {
-                fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
-                    if (location != null) {
-                        fusedLocation(location)
-                    } else {
-                        snackBar(getString(R.string.message_gps))
-                    }
-                }
-            } else {
-                requestPermissionLocation.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                )
+                showLoading(false)
             }
         }
     }
@@ -251,5 +236,13 @@ class HomeFragment : Fragment() {
                 setupCall(data.serviceNumber!!)
             }
         })
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
+        }
     }
 }

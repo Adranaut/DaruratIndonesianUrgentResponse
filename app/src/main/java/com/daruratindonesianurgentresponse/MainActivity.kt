@@ -154,11 +154,6 @@ class MainActivity : AppCompatActivity() {
 
             val locationCallback: LocationCallback = object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
-                    if (locationResult != null) {
-                        if (locationResult == null) {
-                            return
-                        }
-                    }
                 }
             }
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
