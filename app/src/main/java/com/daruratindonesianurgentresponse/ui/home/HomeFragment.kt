@@ -241,8 +241,10 @@ class HomeFragment : Fragment() {
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding.progressBar.visibility = View.VISIBLE
+            binding.darkOverlayView.visibility = View.VISIBLE
         } else {
             binding.progressBar.visibility = View.GONE
+            binding.darkOverlayView.visibility = View.GONE
         }
     }
 }

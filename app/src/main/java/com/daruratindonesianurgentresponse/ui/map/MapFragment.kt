@@ -133,6 +133,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mMap.uiSettings.isCompassEnabled = true
         mMap.uiSettings.isMapToolbarEnabled = true
 
+        showLoading(true)
+
         //Cek lokasi terkini apakah sudah pernah tampil
         if (STATUSMAP) {
             binding?.apply {
@@ -203,46 +205,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 showLoading(false)
             }
         }
-//        // Delay untuk 3 detik
-//        Thread.sleep(3000)
-//
-//        val currentView = view
-//        if (currentView != null) {
-//            viewLifecycleOwner.lifecycleScope.launch {
-//                val context = context ?: return@launch // Check if the context is available
-//                if (ContextCompat.checkSelfPermission(
-//                        context,
-//                        Manifest.permission.ACCESS_FINE_LOCATION
-//                    ) == PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-//                        if (location != null) {
-//                            LATITUDE = location.latitude
-//                            LONGITUDE = location.longitude
-//                            LOCATION = LatLng(LATITUDE, LONGITUDE)
-//                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOCATION, 12f))
-//                            mMap.addMarker(
-//                                MarkerOptions()
-//                                    .position(LOCATION)
-//                                    .title(getString(R.string.current_location))
-//                                    .icon(
-//                                        BitmapDescriptorFactory.defaultMarker(
-//                                            BitmapDescriptorFactory.HUE_GREEN
-//                                        )
-//                                    )
-//                            )
-//                        }
-//                    }
-//                    showLoading(false)
-//                } else {
-//                    showLoading(false)
-//                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//                }
-//            }
-//        } else {
-//            // Handle the case when the view is not available (null)
-//            showLoading(false)
-//        }
     }
 
     private fun servicesLocation(code: String) {
@@ -318,8 +280,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding?.progressBar?.visibility = View.VISIBLE
+            binding?.darkOverlayView?.visibility = View.VISIBLE
         } else {
             binding?.progressBar?.visibility = View.GONE
+            binding?.darkOverlayView?.visibility = View.GONE
         }
     }
 
