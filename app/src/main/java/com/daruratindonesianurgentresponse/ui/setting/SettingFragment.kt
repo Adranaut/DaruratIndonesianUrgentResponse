@@ -1,8 +1,11 @@
 package com.daruratindonesianurgentresponse.ui.setting
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.utils.DarkMode
@@ -11,6 +14,12 @@ class SettingFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+        val languagePreference = findPreference<Preference>(getString(R.string.pref_key_language))
+        languagePreference?.setOnPreferenceClickListener {
+            startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
+            true
+        }
 
         val themePreference = findPreference<ListPreference>(getString(R.string.pref_key_dark))
         themePreference?.setOnPreferenceChangeListener { _, newValue ->

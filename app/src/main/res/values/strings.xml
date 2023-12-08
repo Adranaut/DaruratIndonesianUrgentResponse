@@ -42,6 +42,8 @@
     <string name="message_gps">Please enable internet and GPS!!!</string>
 
     <!-- Night Mode Preferences -->
+    <string name="pref_language_title">Change Language</string>
+    <string name="pref_key_language" translatable="false">key_language</string>
     <string name="pref_dark_title">Dark mode</string>
     <string name="pref_key_dark" translatable="false">key_dark_mode</string>
     <string name="pref_dark_follow_system" translatable="false">follow_system</string>
