@@ -1,31 +1,35 @@
 package com.daruratindonesianurgentresponse.ui.map
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.daruratindonesianurgentresponse.R
-import com.daruratindonesianurgentresponse.data.response.ResultsItem
+import com.daruratindonesianurgentresponse.data.response.DataItem
 import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
-import com.daruratindonesianurgentresponse.utils.FIREFIGHTER
 import com.daruratindonesianurgentresponse.utils.LATITUDE
 import com.daruratindonesianurgentresponse.utils.LOCATION
 import com.daruratindonesianurgentresponse.utils.LONGITUDE
-import com.daruratindonesianurgentresponse.utils.MEDICINE
-import com.daruratindonesianurgentresponse.utils.POLICE
 import com.daruratindonesianurgentresponse.utils.STATUSGPS
 import com.daruratindonesianurgentresponse.utils.STATUSMAP
 import com.daruratindonesianurgentresponse.utils.TYPE
+import com.daruratindonesianurgentresponse.utils.TYPEAMBULANCE
+import com.daruratindonesianurgentresponse.utils.TYPEFIREFIGHTER
+import com.daruratindonesianurgentresponse.utils.TYPEMEDICE
+import com.daruratindonesianurgentresponse.utils.TYPEPOLICE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -48,6 +52,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val binding get() = _binding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var mMap: GoogleMap
+    private lateinit var alamat: String
     private val boundsBuilder = LatLngBounds.Builder()
 
     @Deprecated("Deprecated in Java")
@@ -98,18 +103,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                     1 -> {
                         getMyLocation()
-                        servicesLocation(POLICE)
-                        TYPE = POLICE
+                        servicesLocation(TYPEPOLICE)
+                        TYPE = TYPEPOLICE
                     }
                     2 -> {
                         getMyLocation()
-                        servicesLocation(MEDICINE)
-                        TYPE = MEDICINE
+                        servicesLocation(TYPEAMBULANCE)
+                        TYPE = TYPEAMBULANCE
                     }
                     3 -> {
                         getMyLocation()
-                        servicesLocation(FIREFIGHTER)
-                        TYPE = FIREFIGHTER
+                        servicesLocation(TYPEMEDICE)
+                        TYPE = TYPEMEDICE
+                    }
+                    4 -> {
+                        getMyLocation()
+                        servicesLocation(TYPEFIREFIGHTER)
+                        TYPE = TYPEFIREFIGHTER
                     }
                 }
             }
@@ -207,14 +217,66 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun servicesLocation(code: String) {
+    private fun servicesLocation(type: String) {
         showLoading(true)
         if (STATUSGPS) {
             mMap.clear()
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.getNearbyPlaces("$LATITUDE", "$LONGITUDE", code).collect { result ->
+//                viewModel.getNearbyPlaces("$LATITUDE", "$LONGITUDE", type).collect { result ->
+//                    result.onSuccess { credentials ->
+//                        credentials.results?.let { items ->
+//                            STATUSMAP = true
+//                            binding?.apply {
+//                                tvStatusData.visibility = View.GONE
+//                                rvMap.visibility = View.VISIBLE
+//                            }
+//                            showRecycleView(items)
+//                            boundsBuilder.include(LOCATION)
+//                            mMap.addMarker(
+//                                MarkerOptions()
+//                                    .position(LOCATION)
+//                                    .title(getString(R.string.current_location))
+//                                    .icon(
+//                                        BitmapDescriptorFactory.defaultMarker(
+//                                            BitmapDescriptorFactory.HUE_GREEN
+//                                        )
+//                                    )
+//                            )
+//                            items.forEach { data ->
+//                                val latLng = LatLng(
+//                                    data?.geometry?.location?.lat as Double,
+//                                    data.geometry.location.lng as Double
+//                                )
+//                                mMap.addMarker(
+//                                    MarkerOptions()
+//                                        .position(latLng)
+//                                        .title(data.name)
+//                                        .snippet(data.vicinity)
+//                                )
+//                                boundsBuilder.include(latLng)
+//                            }
+//                            val bounds: LatLngBounds = boundsBuilder.build()
+//                            mMap.animateCamera(
+//                                CameraUpdateFactory.newLatLngBounds(
+//                                    bounds,
+//                                    resources.displayMetrics.widthPixels,
+//                                    resources.displayMetrics.heightPixels,
+//                                    350
+//                                )
+//                            )
+//                            showLoading(false)
+//                        }
+//                    }
+//
+//                    result.onFailure {
+//                        STATUSMAP = false
+//                        snackBar(getString(R.string.failed_to_get_data))
+//                        showLoading(false)
+//                    }
+//                }
+                viewModel.getNearbyPlaces(type, "$LATITUDE", "$LONGITUDE").collect { result ->
                     result.onSuccess { credentials ->
-                        credentials.results?.let { items ->
+                        credentials.data?.let { items ->
                             STATUSMAP = true
                             binding?.apply {
                                 tvStatusData.visibility = View.GONE
@@ -233,15 +295,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     )
                             )
                             items.forEach { data ->
+//                                val latString: String? = data?.latitude
+//                                val latDouble: Double = latString!!.toDouble()
                                 val latLng = LatLng(
-                                    data?.geometry?.location?.lat as Double,
-                                    data.geometry.location.lng as Double
+                                    data?.latitude!!.toDouble(),
+                                    data.longitude!!.toDouble()
                                 )
+                                alamat = data.alamat ?: ""
                                 mMap.addMarker(
                                     MarkerOptions()
                                         .position(latLng)
-                                        .title(data.name)
-                                        .snippet(data.vicinity)
+                                        .title(data.nama)
+                                        .snippet(alamat)
                                 )
                                 boundsBuilder.include(latLng)
                             }
@@ -251,7 +316,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     bounds,
                                     resources.displayMetrics.widthPixels,
                                     resources.displayMetrics.heightPixels,
-                                    350
+                                    200
                                 )
                             )
                             showLoading(false)
@@ -271,10 +336,70 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun showRecycleView(mapResults: List<ResultsItem?>) {
+//    private fun showRecycleView(mapResults: List<ResultsItem?>) {
+//        val adapter = NearbyAdapter()
+//        adapter.submitList(mapResults)
+//        binding?.rvMap?.adapter = adapter
+//    }
+
+    //Variable permission panggilan
+    private val requestPermissionCall =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                snackBar(getString(R.string.message_granted))
+            } else {
+                snackBar(getString(R.string.message_denied))
+            }
+        }
+
+    private fun setupCall(tel: String) {
+        //Untuk meminta permission dan untuk menelepon
+        if (ContextCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.CALL_PHONE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            intentCall(tel)
+        } else {
+            requestPermissionCall.launch(Manifest.permission.CALL_PHONE)
+        }
+    }
+
+    private fun intentCall(tel: String) {
+        //Membuat alert dialog untuk konfirmasi
+        val prefManager =
+            androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val shouldConfirm =
+            prefManager.getBoolean(requireContext().getString(R.string.pref_key_confirm), false)
+        if (shouldConfirm) {
+            AlertDialog.Builder(requireContext()).apply {
+                setTitle(getString(R.string.alert_title))
+                setMessage(getString(R.string.alert_message))
+                setNegativeButton(getString(R.string.no), null)
+                setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$tel"))
+                    startActivity(intent)
+                }
+                show()
+            }
+        } else {
+            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$tel"))
+            startActivity(intent)
+        }
+    }
+
+    private fun showRecycleView(mapResults: List<DataItem?>) {
         val adapter = NearbyAdapter()
         adapter.submitList(mapResults)
         binding?.rvMap?.adapter = adapter
+
+        adapter.setOnItemClickCallback(object : NearbyAdapter.OnItemClickCallback {
+            override fun onItemClicked(data: DataItem) {
+                setupCall(data.telepon!!)
+            }
+        })
     }
 
     private fun showLoading(isLoading: Boolean) {

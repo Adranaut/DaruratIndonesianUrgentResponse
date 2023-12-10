@@ -1,7 +1,7 @@
 package com.daruratindonesianurgentresponse.data
 
 import com.daruratindonesianurgentresponse.data.api.ApiService
-import com.daruratindonesianurgentresponse.data.response.GoogleResponse
+import com.daruratindonesianurgentresponse.data.response.NearbyResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -10,9 +10,19 @@ import kotlinx.coroutines.flow.flowOn
 class Repository private constructor(
     private val apiService: ApiService,
 ) {
-    suspend fun getNearbyPlaces(lat: String, lng: String, type: String): Flow<Result<GoogleResponse>> = flow {
+//    suspend fun getNearbyPlaces(lat: String, lng: String, type: String): Flow<Result<GoogleResponse>> = flow {
+//        try {
+//            val response = apiService.getNearbyPlaces(lat, lng, type)
+//            emit(Result.success(response))
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            emit(Result.failure(e))
+//        }
+//    }.flowOn(Dispatchers.IO)
+
+    suspend fun getNearbyPlaces(type: String, lat: String, lon: String): Flow<Result<NearbyResponse>> = flow {
         try {
-            val response = apiService.getNearbyPlaces(lat, lng, type)
+            val response = apiService.getNearbyPlaces(type, lat, lon)
             emit(Result.success(response))
         } catch (e: Exception) {
             e.printStackTrace()

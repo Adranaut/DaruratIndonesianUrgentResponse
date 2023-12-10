@@ -18,6 +18,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_KEY", "\"AIzaSyB92bJvJzAEc6agNqLYHzoGVyD8hgiH1hQ\"")
+        buildConfigField("String", "PLACE_KEY", "\"daruratappisthebestinBangkit2023\"")
     }
 
     buildTypes {
@@ -44,7 +45,7 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")

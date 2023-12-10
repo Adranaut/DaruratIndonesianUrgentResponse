@@ -5,6 +5,7 @@
         <item>@string/chose</item>
         <item>@string/police</item>
         <item>@string/ambulance</item>
+        <item>@string/medical_facility</item>
         <item>@string/firefighter</item>
     </string-array>
 

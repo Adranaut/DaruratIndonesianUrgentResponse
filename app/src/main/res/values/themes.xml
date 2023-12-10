@@ -4,6 +4,7 @@
         <!-- Customize your light theme here. -->
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/red_pastel</item>
+        <item name="colorSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/red_pastel</item>
         <item name="android:navigationBarColor">@color/red_pastel</item>

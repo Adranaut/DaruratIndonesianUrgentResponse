@@ -6,24 +6,24 @@
         android:id="@+id/bottom_home"
         android:icon="@drawable/baseline_local_phone_24"
         android:title="@string/home"
-        app:cnb_iconColor="@color/tosca"/>
+        app:cnb_iconColor="?attr/colorPrimary"/>
 
     <item
         android:id="@+id/bottom_map"
         android:icon="@drawable/baseline_map_24"
         android:title="@string/map"
-        app:cnb_iconColor="@color/tosca"/>
+        app:cnb_iconColor="?attr/colorPrimary"/>
 
     <item
         android:id="@+id/bottom_chatbot"
         android:icon="@drawable/baseline_live_help_24"
         android:title="@string/chatbot"
-        app:cnb_iconColor="@color/tosca"/>
+        app:cnb_iconColor="?attr/colorPrimary"/>
 
     <item
         android:id="@+id/bottom_setting"
         android:icon="@drawable/baseline_settings_24"
         android:title="@string/setting"
-        app:cnb_iconColor="@color/tosca"/>
+        app:cnb_iconColor="?attr/colorPrimary"/>
 
 </menu>
