@@ -295,8 +295,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     )
                             )
                             items.forEach { data ->
-//                                val latString: String? = data?.latitude
-//                                val latDouble: Double = latString!!.toDouble()
                                 val latLng = LatLng(
                                     data?.latitude!!.toDouble(),
                                     data.longitude!!.toDouble()
@@ -325,6 +323,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                     result.onFailure {
                         STATUSMAP = false
+                        binding?.apply {
+                            tvStatusData.visibility = View.VISIBLE
+                            rvMap.visibility = View.GONE
+                        }
                         snackBar(getString(R.string.failed_to_get_data))
                         showLoading(false)
                     }
