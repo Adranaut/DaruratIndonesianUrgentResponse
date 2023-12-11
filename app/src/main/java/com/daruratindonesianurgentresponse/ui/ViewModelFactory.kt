@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.daruratindonesianurgentresponse.data.Repository
 import com.daruratindonesianurgentresponse.di.Injection
+import com.daruratindonesianurgentresponse.ui.chatbot.ChatBotViewModel
 import com.daruratindonesianurgentresponse.ui.map.MapViewModel
 
 class ViewModelFactory(private val repository: Repository) : ViewModelProvider.NewInstanceFactory() {
@@ -15,6 +16,9 @@ class ViewModelFactory(private val repository: Repository) : ViewModelProvider.N
         return when {
             modelClass.isAssignableFrom(MapViewModel::class.java) -> {
                 MapViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(ChatBotViewModel::class.java) -> {
+                ChatBotViewModel(repository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

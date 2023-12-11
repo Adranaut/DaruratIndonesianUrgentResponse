@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/baseline_local_phone_24"
-                app:tint="?attr/colorSecondary"
+                app:tint="?attr/colorPrimaryVariant"
                 android:contentDescription="@string/call_service" />
 
         </RelativeLayout>

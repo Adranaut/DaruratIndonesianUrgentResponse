@@ -1,15 +1,30 @@
 package com.daruratindonesianurgentresponse.data
 
+import androidx.lifecycle.LiveData
 import com.daruratindonesianurgentresponse.data.api.ApiService
+import com.daruratindonesianurgentresponse.data.local.MessageDao
+import com.daruratindonesianurgentresponse.data.local.MessageDatabase
+import com.daruratindonesianurgentresponse.data.local.MessageEntity
 import com.daruratindonesianurgentresponse.data.response.NearbyResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 class Repository private constructor(
     private val apiService: ApiService,
+    private val messageDao: MessageDao
 ) {
+
+    val allMessages: LiveData<List<MessageEntity>> = messageDao.getAllMessages()
+
+    suspend fun sendMessage(message: MessageEntity) {
+        withContext(Dispatchers.IO) {
+            messageDao.insertMessage(message)
+        }
+    }
+
 //    suspend fun getNearbyPlaces(lat: String, lng: String, type: String): Flow<Result<GoogleResponse>> = flow {
 //        try {
 //            val response = apiService.getNearbyPlaces(lat, lng, type)
@@ -35,10 +50,11 @@ class Repository private constructor(
         @Volatile
         private var instance: Repository? = null
         fun getInstance(
-            apiService: ApiService
+            apiService: ApiService,
+            database: MessageDatabase
         ): Repository =
             instance ?: synchronized(this) {
-                instance ?: Repository(apiService)
+                instance ?: Repository(apiService, database.messageDao())
             }.also { instance = it }
     }
 }
