@@ -42,7 +42,7 @@
     <string name="message_denied">Access denied</string>
     <string name="message_gps">Please enable internet and GPS!!!</string>
 
-    <!-- Night Mode Preferences -->
+    <!-- Preferences -->
     <string name="pref_language_title">Change Language</string>
     <string name="pref_key_language" translatable="false">key_language</string>
     <string name="pref_dark_title">Dark mode</string>
@@ -79,5 +79,7 @@
     <string name="call_service">Call Service</string>
     <string name="type_here">Type here..</string>
     <string name="send_message_to_chat_bot">Send message to chat bot</string>
+    <string name="style_parsing_failed">Style parsing failed</string>
+    <string name="cant_find_style">Can\'t find style</string>
 
 </resources>

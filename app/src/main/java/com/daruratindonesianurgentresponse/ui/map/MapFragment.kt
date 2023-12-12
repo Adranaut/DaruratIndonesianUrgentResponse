@@ -3,6 +3,8 @@ package com.daruratindonesianurgentresponse.ui.map
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,6 +23,7 @@ import com.daruratindonesianurgentresponse.R
 import com.daruratindonesianurgentresponse.data.response.DataItem
 import com.daruratindonesianurgentresponse.databinding.FragmentMapBinding
 import com.daruratindonesianurgentresponse.ui.ViewModelFactory
+import com.daruratindonesianurgentresponse.utils.DarkMode
 import com.daruratindonesianurgentresponse.utils.LATITUDE
 import com.daruratindonesianurgentresponse.utils.LOCATION
 import com.daruratindonesianurgentresponse.utils.LONGITUDE
@@ -38,6 +42,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
@@ -75,9 +80,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
+    @Suppress("DEPRECATION")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMapBinding.bind(view)
+
+        if (AppCompatDelegate.getDefaultNightMode() == DarkMode.ON.value) {
+            binding?.spinnerType?.background = ColorDrawable(resources.getColor(R.color.gray))
+        } else {
+            binding?.spinnerType?.background = ColorDrawable(resources.getColor(R.color.white))
+        }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
@@ -144,6 +156,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mMap.uiSettings.isMapToolbarEnabled = true
 
         showLoading(true)
+        setMapStyle()
 
         //Cek lokasi terkini apakah sudah pernah tampil
         if (STATUSMAP) {
@@ -159,6 +172,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 rvMap.visibility = View.GONE
                 getMyLocation()
             }
+        }
+    }
+
+    private fun setMapStyle() {
+        try {
+            val success =
+                if (AppCompatDelegate.getDefaultNightMode() == DarkMode.ON.value) {
+                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map_style))
+                } else {
+                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.light_map_style))
+                }
+            if (!success) {
+                snackBar(getString(R.string.style_parsing_failed))
+            }
+        } catch (exception: Resources.NotFoundException) {
+            snackBar(getString(R.string.cant_find_style))
         }
     }
 
