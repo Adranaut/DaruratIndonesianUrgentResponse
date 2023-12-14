@@ -18,7 +18,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "API_KEY", "\"AIzaSyB92bJvJzAEc6agNqLYHzoGVyD8hgiH1hQ\"")
         buildConfigField("String", "PLACE_KEY", "\"daruratappisthebestinBangkit2023\"")
     }
 
@@ -72,6 +71,7 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 }

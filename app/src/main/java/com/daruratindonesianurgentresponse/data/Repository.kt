@@ -25,19 +25,9 @@ class Repository private constructor(
         }
     }
 
-//    suspend fun getNearbyPlaces(lat: String, lng: String, type: String): Flow<Result<GoogleResponse>> = flow {
-//        try {
-//            val response = apiService.getNearbyPlaces(lat, lng, type)
-//            emit(Result.success(response))
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            emit(Result.failure(e))
-//        }
-//    }.flowOn(Dispatchers.IO)
-
-    suspend fun getNearbyPlaces(type: String, lat: String, lon: String): Flow<Result<NearbyResponse>> = flow {
+    suspend fun getNearbyPlaces(type: String, lat: String, lon: String, radius: String): Flow<Result<NearbyResponse>> = flow {
         try {
-            val response = apiService.getNearbyPlaces(type, lat, lon)
+            val response = apiService.getNearbyPlaces(type, lat, lon, radius)
             emit(Result.success(response))
         } catch (e: Exception) {
             e.printStackTrace()

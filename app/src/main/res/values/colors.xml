@@ -5,11 +5,7 @@
     <color name="red_pastel">#BE3434</color>
     <color name="gray">#2C2C2C</color>
     <color name="light_gray">#464646</color>
-
-    <color name="orange">#FF9800</color>
-    <color name="green">#4CAF50</color>
-    <color name="tosca">#009688</color>
-    <color name="purple">#9C27B0</color>
+    <color name="dark_gray">#1C1B1F</color>
     <color name="pink">#FB3D4A</color>
 
 </resources>

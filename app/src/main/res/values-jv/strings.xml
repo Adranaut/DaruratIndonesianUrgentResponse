@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Darurat Tanggap Darurat Indonesia</string>
+
+    <!-- Alert Dialog -->
+    <string name="alert_title">Waspada!</string>
+    <string name="alert_message">Apa sampeyan yakin?</string>
+    <string name="no">Ora</string>
+    <string name="yes">Ya</string>
+
+    <!-- Array -->
+    <string name="chose">-- Pilih Kategori --</string>
+    <string name="urgent_call">Telpon Darurat</string>
+    <string name="police">Polisi</string>
+    <string name="ambulance">Ambulance</string>
+    <string name="firefighter">Pemadam Kebakaran</string>
+    <string name="medical_facility">Fasilitas Medis</string>
+    <string name="basarnas">Basarnas</string>
+    <string name="natural_disasters">Posko Bencana Alam</string>
+    <string name="national_alert">Posko Kewaspadaan Nasional</string>
+    <string name="pln">PLN</string>
+    <string name="pmi">PMI</string>
+    <string name="bpom">BPOM</string>
+
+    <string name="urgent_cal_number">112</string>
+    <string name="police_number">110</string>
+    <string name="ambulance_number">119</string>
+    <string name="firefighter_number">113</string>
+    <string name="basarnas_number">115</string>
+    <string name="natural_disasters_number">129</string>
+    <string name="national_alert_number">122</string>
+    <string name="pln_number">123</string>
+    <string name="pmi_number">117</string>
+    <string name="bpom_number">1500533</string>
+
+    <!-- Preferences -->
+    <string name="pref_confirm_name">Telpon Konfimasi</string>
+    <string name="pref_confirm_summary">Dialog tandha nalika nelpon.</string>
+    <string name="pref_language_title">Ganti Basa</string>
+    <string name="pref_dark_title">Mode peteng</string>
+    <string name="dark_mode_auto">Otomatis</string>
+    <string name="dark_mode_on">Mode peteng</string>
+    <string name="dark_mode_off">Mode Cahya</string>
+
+    <!-- Other -->
+    <string name="message_granted">Akses diwenehake</string>
+    <string name="message_denied">Akses ditolak</string>
+    <string name="message_gps">Mangga ngaktifake internet lan GPS!!!</string>
+    <string name="address">Alamat</string>
+    <string name="current_location">Lokasi Saiki</string>
+    <string name="get_current_location">Entuk Lokasi Saiki</string>
+    <string name="get">Gawe</string>
+    <string name="marker_image">Gambar panandha</string>
+    <string name="try_again">Coba maneh</string>
+    <string name="something_wrong">Soko salah! Mangga mriksa internet panjengengan</string>
+    <string name="select_category">Mangga pilih kategori!</string>
+    <string name="failed_to_get_data">Layanan sing cedhak ing lokasi sampeyan saiki ora ditemokake</string>
+    <string name="there_is_no_data">Ora ana data</string>
+    <string name="service_name">Jeneng layanan</string>
+    <string name="point_of_interest_name">Jeneng titik minat</string>
+    <string name="point_of_interest_address">Alamat Titik Minat \nJl. Tuladha</string>
+    <string name="distance">1,7 KM</string>
+    <string name="show_marker_in_map">Tampilake panandha ing peta</string>
+    <string name="phone_icon">Ikon telpon</string>
+    <string name="marker_icon">Ikon panandha</string>
+    <string name="home">Omah</string>
+    <string name="map">Peta</string>
+    <string name="chatbot">ChatBot</string>
+    <string name="setting">Pangatur</string>
+    <string name="call_service">Layanan telpon</string>
+    <string name="type_here">Ketik kene..</string>
+    <string name="send_message_to_chat_bot">Kirim pesen</string>
+    <string name="style_parsing_failed">Parsing gaya gagal</string>
+    <string name="cant_find_style">Ora bisa nemokake gaya</string>
+    <string name="context_is_null">Konteks iku kosong</string>
+
+</resources>

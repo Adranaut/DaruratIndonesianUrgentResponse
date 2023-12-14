@@ -3,7 +3,7 @@
     <style name="Base.Theme.DaruratIndonesianUrgentResponse" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/gray</item>
+        <item name="colorPrimaryVariant">@color/dark_gray</item>
         <item name="colorPrimaryContainer">@color/light_gray</item>
         <item name="colorSecondary">@color/white</item>
         <!-- Status bar color. -->

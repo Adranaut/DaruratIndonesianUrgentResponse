@@ -26,15 +26,5 @@ object ApiConfig {
             .client(client)
             .build()
         return retrofit.create(ApiService::class.java)
-//        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-//        val client = OkHttpClient.Builder()
-//            .addInterceptor(loggingInterceptor)
-//            .build()
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl("https://capstone-proj-406511.as.r.appspot.com/api/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .client(client)
-//            .build()
-//        return retrofit.create(ApiService::class.java)
     }
 }

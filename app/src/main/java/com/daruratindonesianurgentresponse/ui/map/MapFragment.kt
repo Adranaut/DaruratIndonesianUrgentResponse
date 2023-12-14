@@ -27,6 +27,9 @@ import com.daruratindonesianurgentresponse.utils.DarkMode
 import com.daruratindonesianurgentresponse.utils.LATITUDE
 import com.daruratindonesianurgentresponse.utils.LOCATION
 import com.daruratindonesianurgentresponse.utils.LONGITUDE
+import com.daruratindonesianurgentresponse.utils.PRIMARYRADIUS
+import com.daruratindonesianurgentresponse.utils.SECONDARYRYRADIUS
+import com.daruratindonesianurgentresponse.utils.SPINNERINDEX
 import com.daruratindonesianurgentresponse.utils.STATUSGPS
 import com.daruratindonesianurgentresponse.utils.STATUSMAP
 import com.daruratindonesianurgentresponse.utils.TYPE
@@ -86,7 +89,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         _binding = FragmentMapBinding.bind(view)
 
         if (AppCompatDelegate.getDefaultNightMode() == DarkMode.ON.value) {
-            binding?.spinnerType?.background = ColorDrawable(resources.getColor(R.color.gray))
+            binding?.spinnerType?.background = ColorDrawable(resources.getColor(R.color.dark_gray))
         } else {
             binding?.spinnerType?.background = ColorDrawable(resources.getColor(R.color.white))
         }
@@ -110,28 +113,32 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             mMap.clear()
                             getMyLocation()
                         }
+                        SPINNERINDEX = 0
                         STATUSMAP = false
-                        snackBar(getString(R.string.select_category))
                     }
                     1 -> {
                         getMyLocation()
                         servicesLocation(TYPEPOLICE)
                         TYPE = TYPEPOLICE
+                        SPINNERINDEX = 1
                     }
                     2 -> {
                         getMyLocation()
                         servicesLocation(TYPEAMBULANCE)
                         TYPE = TYPEAMBULANCE
+                        SPINNERINDEX = 2
                     }
                     3 -> {
                         getMyLocation()
                         servicesLocation(TYPEMEDICE)
                         TYPE = TYPEMEDICE
+                        SPINNERINDEX = 3
                     }
                     4 -> {
                         getMyLocation()
                         servicesLocation(TYPEFIREFIGHTER)
                         TYPE = TYPEFIREFIGHTER
+                        SPINNERINDEX = 4
                     }
                 }
             }
@@ -164,6 +171,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 tvStatusData.visibility = View.GONE
                 rvMap.visibility = View.VISIBLE
                 getMyLocation()
+                spinnerType.setSelection(SPINNERINDEX)
                 servicesLocation(TYPE)
             }
         } else {
@@ -171,23 +179,36 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 tvStatusData.visibility = View.VISIBLE
                 rvMap.visibility = View.GONE
                 getMyLocation()
+                spinnerType.setSelection(SPINNERINDEX)
             }
         }
     }
 
     private fun setMapStyle() {
-        try {
-            val success =
-                if (AppCompatDelegate.getDefaultNightMode() == DarkMode.ON.value) {
-                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map_style))
+        if (!isAdded || view == null) {
+            // Fragment is not added or the view is null
+            return
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val context = context
+                if (context != null) {
+                    val success =
+                        if (AppCompatDelegate.getDefaultNightMode() == DarkMode.ON.value) {
+                            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.dark_map_style))
+                        } else {
+                            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.light_map_style))
+                        }
+                    if (!success) {
+                        snackBar(getString(R.string.style_parsing_failed))
+                    }
                 } else {
-                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.light_map_style))
+                    // Handle the case when the context is null
+                    snackBar(getString(R.string.context_is_null))
                 }
-            if (!success) {
-                snackBar(getString(R.string.style_parsing_failed))
+            } catch (exception: Resources.NotFoundException) {
+                snackBar(getString(R.string.cant_find_style))
             }
-        } catch (exception: Resources.NotFoundException) {
-            snackBar(getString(R.string.cant_find_style))
         }
     }
 
@@ -251,59 +272,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         if (STATUSGPS) {
             mMap.clear()
             viewLifecycleOwner.lifecycleScope.launch {
-//                viewModel.getNearbyPlaces("$LATITUDE", "$LONGITUDE", type).collect { result ->
-//                    result.onSuccess { credentials ->
-//                        credentials.results?.let { items ->
-//                            STATUSMAP = true
-//                            binding?.apply {
-//                                tvStatusData.visibility = View.GONE
-//                                rvMap.visibility = View.VISIBLE
-//                            }
-//                            showRecycleView(items)
-//                            boundsBuilder.include(LOCATION)
-//                            mMap.addMarker(
-//                                MarkerOptions()
-//                                    .position(LOCATION)
-//                                    .title(getString(R.string.current_location))
-//                                    .icon(
-//                                        BitmapDescriptorFactory.defaultMarker(
-//                                            BitmapDescriptorFactory.HUE_GREEN
-//                                        )
-//                                    )
-//                            )
-//                            items.forEach { data ->
-//                                val latLng = LatLng(
-//                                    data?.geometry?.location?.lat as Double,
-//                                    data.geometry.location.lng as Double
-//                                )
-//                                mMap.addMarker(
-//                                    MarkerOptions()
-//                                        .position(latLng)
-//                                        .title(data.name)
-//                                        .snippet(data.vicinity)
-//                                )
-//                                boundsBuilder.include(latLng)
-//                            }
-//                            val bounds: LatLngBounds = boundsBuilder.build()
-//                            mMap.animateCamera(
-//                                CameraUpdateFactory.newLatLngBounds(
-//                                    bounds,
-//                                    resources.displayMetrics.widthPixels,
-//                                    resources.displayMetrics.heightPixels,
-//                                    350
-//                                )
-//                            )
-//                            showLoading(false)
-//                        }
-//                    }
-//
-//                    result.onFailure {
-//                        STATUSMAP = false
-//                        snackBar(getString(R.string.failed_to_get_data))
-//                        showLoading(false)
-//                    }
-//                }
-                viewModel.getNearbyPlaces(type, "$LATITUDE", "$LONGITUDE").collect { result ->
+                viewModel.getNearbyPlaces(type, "$LATITUDE", "$LONGITUDE", PRIMARYRADIUS).collect { result ->
                     result.onSuccess { credentials ->
                         credentials.data?.let { items ->
                             STATUSMAP = true
@@ -351,13 +320,63 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
 
                     result.onFailure {
-                        STATUSMAP = false
-                        binding?.apply {
-                            tvStatusData.visibility = View.VISIBLE
-                            rvMap.visibility = View.GONE
+                        viewModel.getNearbyPlaces(type, "$LATITUDE", "$LONGITUDE", SECONDARYRYRADIUS).collect { result ->
+                            result.onSuccess { credentials ->
+                                credentials.data?.let { items ->
+                                    STATUSMAP = true
+                                    binding?.apply {
+                                        tvStatusData.visibility = View.GONE
+                                        rvMap.visibility = View.VISIBLE
+                                    }
+                                    showRecycleView(items)
+                                    boundsBuilder.include(LOCATION)
+                                    mMap.addMarker(
+                                        MarkerOptions()
+                                            .position(LOCATION)
+                                            .title(getString(R.string.current_location))
+                                            .icon(
+                                                BitmapDescriptorFactory.defaultMarker(
+                                                    BitmapDescriptorFactory.HUE_GREEN
+                                                )
+                                            )
+                                    )
+                                    items.forEach { data ->
+                                        val latLng = LatLng(
+                                            data?.latitude!!.toDouble(),
+                                            data.longitude!!.toDouble()
+                                        )
+                                        alamat = data.alamat ?: ""
+                                        mMap.addMarker(
+                                            MarkerOptions()
+                                                .position(latLng)
+                                                .title(data.nama)
+                                                .snippet(alamat)
+                                        )
+                                        boundsBuilder.include(latLng)
+                                    }
+                                    val bounds: LatLngBounds = boundsBuilder.build()
+                                    mMap.animateCamera(
+                                        CameraUpdateFactory.newLatLngBounds(
+                                            bounds,
+                                            resources.displayMetrics.widthPixels,
+                                            resources.displayMetrics.heightPixels,
+                                            200
+                                        )
+                                    )
+                                    showLoading(false)
+                                }
+                            }
+
+                            result.onFailure {
+                                STATUSMAP = false
+                                binding?.apply {
+                                    tvStatusData.visibility = View.VISIBLE
+                                    rvMap.visibility = View.GONE
+                                }
+                                snackBar(getString(R.string.failed_to_get_data))
+                                showLoading(false)
+                            }
                         }
-                        snackBar(getString(R.string.failed_to_get_data))
-                        showLoading(false)
                     }
                 }
             }
@@ -366,12 +385,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             snackBar(getString(R.string.message_gps))
         }
     }
-
-//    private fun showRecycleView(mapResults: List<ResultsItem?>) {
-//        val adapter = NearbyAdapter()
-//        adapter.submitList(mapResults)
-//        binding?.rvMap?.adapter = adapter
-//    }
 
     //Variable permission panggilan
     private val requestPermissionCall =
