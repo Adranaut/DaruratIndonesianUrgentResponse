@@ -67,6 +67,19 @@ class ChatBotFragment : Fragment() {
             val message = MessageEntity(sender = sender, content = content)
             lifecycleScope.launch {
                 viewModel.sendMessage(message)
+                viewModel.inputChatBot(content).collect { result ->
+                    result.onSuccess { credentials ->
+                        credentials.response?.let { response ->
+                            val messageBot = MessageEntity(sender = "Bot", content = response)
+                            viewModel.sendMessage(messageBot)
+                        }
+                    }
+
+                    result.onFailure {
+                        val messageBot = MessageEntity(sender = "Bot", content = "Sorry process message failure")
+                        viewModel.sendMessage(messageBot)
+                    }
+                }
             }
 
             // Clear the input field after sending the message
