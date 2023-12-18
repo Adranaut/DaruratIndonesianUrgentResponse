@@ -73,5 +73,7 @@
     <string name="style_parsing_failed">Penguraian gaya gagal</string>
     <string name="cant_find_style">Tidak dapat menemukan gaya</string>
     <string name="context_is_null">Konteksnya kosong</string>
+    <string name="sorry_process_failure">Maaf kegagalan proses</string>
+    <string name="error_chat">Maaf Ada sesuatu yang salah</string>
 
 </resources>

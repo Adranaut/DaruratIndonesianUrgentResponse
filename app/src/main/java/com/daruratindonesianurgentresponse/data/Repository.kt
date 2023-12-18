@@ -21,14 +21,17 @@ class Repository private constructor(
     private val apiServiceChat: ApiServiceChat
 ) {
 
+    //Livedata untuk pesan yang ada di database lokal
     val allMessages: LiveData<List<MessageEntity>> = messageDao.getAllMessages()
 
+    //Fungsi untuk menyimpan pesan di database lokal
     suspend fun sendMessage(message: MessageEntity) {
         withContext(Dispatchers.IO) {
             messageDao.insertMessage(message)
         }
     }
 
+    //Fungsi untuk mengambil list tempat terdekat
     suspend fun getNearbyPlaces(type: String, lat: String, lon: String, radius: String): Flow<Result<NearbyResponse>> = flow {
         try {
             val response = apiService.getNearbyPlaces(type, lat, lon, radius)
@@ -39,6 +42,7 @@ class Repository private constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    //Fungsi untuk mendapatkan response pesan dari chatbot
     suspend fun inputChatBot(messageRequestBody: MessageRequestBody): Flow<Result<ChatResponse>> = flow {
         try {
             val response = apiServiceChat.inputChatBot(messageRequestBody)

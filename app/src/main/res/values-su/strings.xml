@@ -73,5 +73,7 @@
     <string name="style_parsing_failed">Robah gaya gagal</string>
     <string name="cant_find_style">Teu bisa manggihan gaya</string>
     <string name="context_is_null">Konteks na kosong</string>
+    <string name="sorry_process_failure">Hampunteun proses gagal</string>
+    <string name="error_chat">Hampunteun Aya nu leupat</string>
 
 </resources>

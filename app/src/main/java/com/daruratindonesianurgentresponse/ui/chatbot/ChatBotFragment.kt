@@ -36,6 +36,7 @@ class ChatBotFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentChatBotBinding.bind(view)
 
+        //Inisialisasi awal untuk livedata dan button
         setupRecyclerView()
 
         viewModel.allMessages.observe(requireActivity()) { messages ->
@@ -53,32 +54,40 @@ class ChatBotFragment : Fragment() {
         _binding = null
     }
 
+    //Fungsi untuk mempersiapkan recyclerview
     private fun setupRecyclerView() {
         adapter = MessageAdapter()
         binding?.recyclerView?.adapter = adapter
         binding?.recyclerView?.layoutManager = LinearLayoutManager(requireContext())
     }
 
+    //Fungsi saat mengirim pesan
     private fun sendMessage() {
-        val sender = "User" // Replace with actual sender (user authentication)
+        val sender = "User"
+        val senderBot = "Bot"
         val content = binding?.editTextMessage?.text.toString().trim()
 
         if (content.isNotEmpty()) {
             val message = MessageEntity(sender = sender, content = content)
             lifecycleScope.launch {
-                viewModel.sendMessage(message)
-                viewModel.inputChatBot(content).collect { result ->
-                    result.onSuccess { credentials ->
-                        credentials.response?.let { response ->
-                            val messageBot = MessageEntity(sender = "Bot", content = response)
+                try {
+                    viewModel.sendMessage(message)
+                    viewModel.inputChatBot(content).collect { result ->
+                        result.onSuccess { credentials ->
+                            credentials.response?.let { response ->
+                                val messageBot = MessageEntity(sender = senderBot, content = response)
+                                viewModel.sendMessage(messageBot)
+                            }
+                        }
+
+                        result.onFailure {
+                            val messageBot = MessageEntity(sender = senderBot, content = getString(R.string.sorry_process_failure))
                             viewModel.sendMessage(messageBot)
                         }
                     }
-
-                    result.onFailure {
-                        val messageBot = MessageEntity(sender = "Bot", content = "Sorry process message failure")
-                        viewModel.sendMessage(messageBot)
-                    }
+                } catch (e: Exception) {
+                    val messageBot = MessageEntity(sender = senderBot, content = getString(R.string.error_chat))
+                    viewModel.sendMessage(messageBot)
                 }
             }
 

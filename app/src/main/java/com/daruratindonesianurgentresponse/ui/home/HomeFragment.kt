@@ -146,11 +146,11 @@ class HomeFragment : Fragment() {
                         permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
 
             if (locationPermissionGranted) {
-                // Precise or approximate location access granted.
+                //Akses lokasi yang tepat atau perkiraan diberikan
                 getMyLocation()
                 snackBar(getString(R.string.message_granted))
             } else {
-                // No location access granted.
+                //Tidak ada akses lokasi yang diberikan.
                 snackBar(getString(R.string.message_denied))
             }
         }
@@ -238,6 +238,7 @@ class HomeFragment : Fragment() {
         })
     }
 
+    //Mengatur keadaan ketika terjadi loading data
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding.progressBar.visibility = View.VISIBLE

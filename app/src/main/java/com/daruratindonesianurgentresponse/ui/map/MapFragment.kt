@@ -88,12 +88,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMapBinding.bind(view)
 
+        //Inisialiasi untuk darkmode
         if (AppCompatDelegate.getDefaultNightMode() == DarkMode.ON.value) {
             binding?.spinnerType?.background = ColorDrawable(resources.getColor(R.color.dark_gray))
         } else {
             binding?.spinnerType?.background = ColorDrawable(resources.getColor(R.color.white))
         }
 
+        //Inisialisasi awal untuk lokasi terkini, layout, dan spinner
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         binding?.rvMap?.layoutManager = LinearLayoutManager(requireContext())
@@ -184,9 +186,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    //Fungsi untuk mengatur style map
     private fun setMapStyle() {
         if (!isAdded || view == null) {
-            // Fragment is not added or the view is null
+            //Fragmen tidak ditambahkan atau tampilannya null
             return
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -203,7 +206,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         snackBar(getString(R.string.style_parsing_failed))
                     }
                 } else {
-                    // Handle the case when the context is null
+                    //Menangani kasus ketika konteksnya null
                     snackBar(getString(R.string.context_is_null))
                 }
             } catch (exception: Resources.NotFoundException) {
@@ -226,12 +229,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun getMyLocation() {
         viewLifecycleOwner.lifecycleScope.launch {
-            // Delay for 3 seconds
+            //Delay untuk 3 detik
             delay(3000)
 
             val currentView = view
             if (currentView != null) {
-                val context = context ?: return@launch // Check if the context is available
+                val context = context ?: return@launch
                 if (ContextCompat.checkSelfPermission(
                         context,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -261,12 +264,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
             } else {
-                // Handle the case when the view is not available (null)
+                //Menangani kasus ketika tampilan tidak tersedia atau null
                 showLoading(false)
             }
         }
     }
 
+    //Fungsi untuk memberikan marker di map dan menampilkan data ke list
     private fun servicesLocation(type: String) {
         showLoading(true)
         if (STATUSGPS) {
@@ -320,6 +324,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
 
                     result.onFailure {
+                        //Jika dengan radius 10KM tidak ditemukan
                         viewModel.getNearbyPlaces(type, "$LATITUDE", "$LONGITUDE", SECONDARYRYRADIUS).collect { result ->
                             result.onSuccess { credentials ->
                                 credentials.data?.let { items ->
@@ -434,6 +439,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    //Fungsi untuk mengatur recyclerview
     private fun showRecycleView(mapResults: List<DataItem?>) {
         val adapter = NearbyAdapter()
         adapter.submitList(mapResults)
@@ -446,6 +452,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
+    //Fungsi untuk mengatur kondisi saat loading
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding?.progressBar?.visibility = View.VISIBLE
@@ -456,6 +463,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    //Fungsi untuk membuat snackbar
     private fun snackBar(message: String) {
         Snackbar.make(binding!!.loMain, message, Snackbar.LENGTH_LONG).show()
     }

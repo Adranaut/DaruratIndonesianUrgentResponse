@@ -141,6 +141,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    //Fungsi untuk mendapatkan lokasi terkini
     @Suppress("DEPRECATION")
     private fun getMyLocation() {
         if (ContextCompat.checkSelfPermission(

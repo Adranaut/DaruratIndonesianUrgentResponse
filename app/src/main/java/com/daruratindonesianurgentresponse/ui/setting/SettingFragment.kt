@@ -15,12 +15,14 @@ class SettingFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
+        //Untuk mengganti bahasa
         val languagePreference = findPreference<Preference>(getString(R.string.pref_key_language))
         languagePreference?.setOnPreferenceClickListener {
             startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
             true
         }
 
+        //Untuk memilih tema
         val themePreference = findPreference<ListPreference>(getString(R.string.pref_key_dark))
         themePreference?.setOnPreferenceChangeListener { _, newValue ->
             when(newValue){
