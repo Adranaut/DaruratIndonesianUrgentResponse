@@ -21,7 +21,7 @@ object ApiConfig {
             .addInterceptor(authInterceptor)
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://darurat-user-api.vercel.app/api/v1/")
+            .baseUrl("https://user-darurat-dot-capstone-proj-406511.as.r.appspot.com/api/v1/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
